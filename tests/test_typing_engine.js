@@ -3,12 +3,13 @@ import assert from 'node:assert/strict';
 import { TypingEngine } from '../src/core/typing-engine.js';
 
 describe('TypingEngine', () => {
-  it('loadQuestion sets original and romaji', () => {
+  it('loadQuestion sets original and initializes for input', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('さくら', 'sakura');
     assert.equal(engine.original, 'さくら');
-    assert.equal(engine.romaji, 'sakura');
-    assert.equal(engine.currentPos, 0);
+    const display = engine.getCurrentDisplay();
+    assert.equal(display.remaining, 'sakura');
+    assert.equal(display.typed, '');
   });
 
   it('handleKeyPress returns correct:true for correct key', () => {
@@ -23,23 +24,23 @@ describe('TypingEngine', () => {
     engine.loadQuestion('あ', 'a');
     const result = engine.handleKeyPress('b');
     assert.equal(result.correct, false);
-    assert.equal(engine.currentPos, 0);
+    assert.equal(result.currentPos, 0);
   });
 
   it('handleKeyPress advances currentPos on correct key', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('かき', 'kaki');
-    engine.handleKeyPress('k');
-    assert.equal(engine.currentPos, 1);
-    engine.handleKeyPress('a');
-    assert.equal(engine.currentPos, 2);
+    const r1 = engine.handleKeyPress('k');
+    assert.equal(r1.currentPos, 1);
+    const r2 = engine.handleKeyPress('a');
+    assert.equal(r2.currentPos, 2);
   });
 
   it('handleKeyPress does not advance on wrong key', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('か', 'ka');
-    engine.handleKeyPress('z');
-    assert.equal(engine.currentPos, 0);
+    const result = engine.handleKeyPress('z');
+    assert.equal(result.currentPos, 0);
   });
 
   it('returns completed:true when all characters typed', () => {
@@ -74,8 +75,9 @@ describe('TypingEngine', () => {
     engine.handleKeyPress('a');
     engine.reset();
     assert.equal(engine.original, '');
-    assert.equal(engine.romaji, '');
-    assert.equal(engine.currentPos, 0);
+    const display = engine.getCurrentDisplay();
+    assert.equal(display.typed, '');
+    assert.equal(display.remaining, '');
   });
 
   it('getCurrentDisplay returns correct typed/remaining split', () => {
