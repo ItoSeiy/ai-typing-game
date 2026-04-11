@@ -16,7 +16,7 @@ function typeAll(engine, keys) {
 describe('カタカナ正規化', () => {
   it('カタカナ「ラーメン」をロードしてチャンク分割が正常動作する', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('ラーメン', 'ra-menn');
+    engine.loadQuestion('ラーメン', 'らーめん');
     assert.ok(engine.chunks.length > 0, 'chunks should not be empty');
     const display = engine.getCurrentDisplay();
     assert.ok(display.remaining.length > 0, 'remaining should not be empty');
@@ -24,32 +24,32 @@ describe('カタカナ正規化', () => {
 
   it('「ラーメン」を ra-men で入力完了できる（末尾ん=n単打確定）', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('ラーメン', '');
+    engine.loadQuestion('ラーメン', 'らーめん');
     typeAll(engine, 'ra-men'.split(''));
   });
 
   it('「サッカー」(促音+カタカナ) を sakka- で入力完了できる', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('サッカー', '');
+    engine.loadQuestion('サッカー', 'さっかー');
     typeAll(engine, 'sakka-'.split(''));
   });
 
   it('「インターネット」を正しく分割・入力できる', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('インターネット', '');
+    engine.loadQuestion('インターネット', 'いんたーねっと');
     // いんたーねっと → innta-netto
     typeAll(engine, 'innta-netto'.split(''));
   });
 
   it('「テスト」を tesuto で入力完了できる', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('テスト', '');
+    engine.loadQuestion('テスト', 'てすと');
     typeAll(engine, 'tesuto'.split(''));
   });
 
   it('「パソコン」を pasokon で入力完了できる（末尾ん=n単打確定）', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('パソコン', '');
+    engine.loadQuestion('パソコン', 'ぱそこん');
     typeAll(engine, 'pasokon'.split(''));
   });
 });
@@ -57,7 +57,7 @@ describe('カタカナ正規化', () => {
 describe('伸ばし棒テスト', () => {
   it('「ー」単体を "-" キーで入力できる', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('ー', '');
+    engine.loadQuestion('ー', 'ー');
     const result = engine.handleKeyPress('-');
     assert.equal(result.correct, true);
     assert.equal(result.completed, true);
@@ -65,7 +65,7 @@ describe('伸ばし棒テスト', () => {
 
   it('「コーヒー」を ko-hi- で入力完了できる', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('コーヒー', '');
+    engine.loadQuestion('コーヒー', 'こーひー');
     typeAll(engine, 'ko-hi-'.split(''));
   });
 });
@@ -73,13 +73,13 @@ describe('伸ばし棒テスト', () => {
 describe('ひらがな・カタカナ混在テスト', () => {
   it('originalプロパティは変換前のテキストを保持する', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('タワー', '');
+    engine.loadQuestion('タワー', 'たわー');
     assert.equal(engine.original, 'タワー');
   });
 
   it('カタカナ部分のみ含む「タワー」を tawa- で入力できる', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('タワー', '');
+    engine.loadQuestion('タワー', 'たわー');
     typeAll(engine, 'tawa-'.split(''));
   });
 });
@@ -87,25 +87,25 @@ describe('ひらがな・カタカナ混在テスト', () => {
 describe('既存ひらがなテスト非影響', () => {
   it('ひらがなのみ「さくら」がこれまで通り動作する', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('さくら', '');
+    engine.loadQuestion('さくら', 'さくら');
     typeAll(engine, 'sakura'.split(''));
   });
 
   it('ひらがなの促音「きって」がこれまで通り動作する', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('きって', '');
+    engine.loadQuestion('きって', 'きって');
     typeAll(engine, 'kitte'.split(''));
   });
 
   it('ひらがなの拗音「しゃしん」がこれまで通り動作する', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('しゃしん', '');
+    engine.loadQuestion('しゃしん', 'しゃしん');
     typeAll(engine, 'shasin'.split(''));
   });
 
   it('ひらがなの「ん」が正しく処理される（末尾=n単打確定）', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('ほん', '');
+    engine.loadQuestion('ほん', 'ほん');
     typeAll(engine, 'hon'.split(''));
   });
 });

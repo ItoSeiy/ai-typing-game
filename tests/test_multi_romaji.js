@@ -18,73 +18,73 @@ describe('Multi-Romaji Patterns', () => {
 
   it('し: "shi" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('し', '');
+    engine.loadQuestion('し', 'し');
     typeFullSequence(engine, 'shi');
   });
 
   it('し: "si" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('し', '');
+    engine.loadQuestion('し', 'し');
     typeFullSequence(engine, 'si');
   });
 
   it('ち: "chi" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('ち', '');
+    engine.loadQuestion('ち', 'ち');
     typeFullSequence(engine, 'chi');
   });
 
   it('ち: "ti" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('ち', '');
+    engine.loadQuestion('ち', 'ち');
     typeFullSequence(engine, 'ti');
   });
 
   it('つ: "tsu" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('つ', '');
+    engine.loadQuestion('つ', 'つ');
     typeFullSequence(engine, 'tsu');
   });
 
   it('つ: "tu" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('つ', '');
+    engine.loadQuestion('つ', 'つ');
     typeFullSequence(engine, 'tu');
   });
 
   it('ふ: "fu" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('ふ', '');
+    engine.loadQuestion('ふ', 'ふ');
     typeFullSequence(engine, 'fu');
   });
 
   it('ふ: "hu" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('ふ', '');
+    engine.loadQuestion('ふ', 'ふ');
     typeFullSequence(engine, 'hu');
   });
 
   it('じ: "ji" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('じ', '');
+    engine.loadQuestion('じ', 'じ');
     typeFullSequence(engine, 'ji');
   });
 
   it('じ: "zi" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('じ', '');
+    engine.loadQuestion('じ', 'じ');
     typeFullSequence(engine, 'zi');
   });
 
   it('を: "wo" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('を', '');
+    engine.loadQuestion('を', 'を');
     typeFullSequence(engine, 'wo');
   });
 
   it('を: "o" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('を', '');
+    engine.loadQuestion('を', 'を');
     typeFullSequence(engine, 'o');
   });
 });
@@ -92,49 +92,49 @@ describe('Multi-Romaji Patterns', () => {
 describe('Youon (拗音) Patterns', () => {
   it('しゃ: "sha" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('しゃ', '');
+    engine.loadQuestion('しゃ', 'しゃ');
     typeFullSequence(engine, 'sha');
   });
 
   it('しゃ: "sya" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('しゃ', '');
+    engine.loadQuestion('しゃ', 'しゃ');
     typeFullSequence(engine, 'sya');
   });
 
   it('ちゃ: "cha" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('ちゃ', '');
+    engine.loadQuestion('ちゃ', 'ちゃ');
     typeFullSequence(engine, 'cha');
   });
 
   it('ちゃ: "tya" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('ちゃ', '');
+    engine.loadQuestion('ちゃ', 'ちゃ');
     typeFullSequence(engine, 'tya');
   });
 
   it('ちゃ: "cya" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('ちゃ', '');
+    engine.loadQuestion('ちゃ', 'ちゃ');
     typeFullSequence(engine, 'cya');
   });
 
   it('じゃ: "ja" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('じゃ', '');
+    engine.loadQuestion('じゃ', 'じゃ');
     typeFullSequence(engine, 'ja');
   });
 
   it('じゃ: "zya" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('じゃ', '');
+    engine.loadQuestion('じゃ', 'じゃ');
     typeFullSequence(engine, 'zya');
   });
 
   it('じゃ: "jya" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('じゃ', '');
+    engine.loadQuestion('じゃ', 'じゃ');
     typeFullSequence(engine, 'jya');
   });
 });
@@ -142,31 +142,31 @@ describe('Youon (拗音) Patterns', () => {
 describe('Sokuon (促音) Patterns', () => {
   it('っか: "kka" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('っか', '');
+    engine.loadQuestion('っか', 'っか');
     typeFullSequence(engine, 'kka');
   });
 
   it('っち: "cchi" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('っち', '');
+    engine.loadQuestion('っち', 'っち');
     typeFullSequence(engine, 'cchi');
   });
 
   it('っち: "tti" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('っち', '');
+    engine.loadQuestion('っち', 'っち');
     typeFullSequence(engine, 'tti');
   });
 
   it('っ単体: "xtu" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('っ', '');
+    engine.loadQuestion('っ', 'っ');
     typeFullSequence(engine, 'xtu');
   });
 
   it('っ単体: "ltu" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('っ', '');
+    engine.loadQuestion('っ', 'っ');
     typeFullSequence(engine, 'ltu');
   });
 });
@@ -174,25 +174,25 @@ describe('Sokuon (促音) Patterns', () => {
 describe('"ん" Context-Dependent Patterns', () => {
   it('かんた: "kanta" で正解 (n単打 + 子音)', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('かんた', '');
+    engine.loadQuestion('かんた', 'かんた');
     typeFullSequence(engine, 'kanta');
   });
 
   it('かんた: "kannta" で正解 (nn + ta)', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('かんた', '');
+    engine.loadQuestion('かんた', 'かんた');
     typeFullSequence(engine, 'kannta');
   });
 
   it('かんあ: "kanna" で正解 (nn必須 — 次が母音)', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('かんあ', '');
+    engine.loadQuestion('かんあ', 'かんあ');
     typeFullSequence(engine, 'kanna');
   });
 
   it('かん（末尾）: "kan" で正解 (末尾のn単打OK)', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('かん', '');
+    engine.loadQuestion('かん', 'かん');
     typeFullSequence(engine, 'kan');
   });
 });
@@ -200,13 +200,13 @@ describe('"ん" Context-Dependent Patterns', () => {
 describe('Compound Patterns (複合テスト)', () => {
   it('しっかり: "sikkari" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('しっかり', '');
+    engine.loadQuestion('しっかり', 'しっかり');
     typeFullSequence(engine, 'sikkari');
   });
 
   it('しっかり: "shikkari" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('しっかり', '');
+    engine.loadQuestion('しっかり', 'しっかり');
     typeFullSequence(engine, 'shikkari');
   });
 });
@@ -214,7 +214,7 @@ describe('Compound Patterns (複合テスト)', () => {
 describe('getCurrentDisplay Tracking', () => {
   it('入力に応じてtyped/remainingが正しく変化する', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('しか', '');
+    engine.loadQuestion('しか', 'しか');
 
     // 初期状態
     let display = engine.getCurrentDisplay();
@@ -251,7 +251,7 @@ describe('getCurrentDisplay Tracking', () => {
 describe('Mistype Handling', () => {
   it('不正キー入力で correct: false、位置変わらず', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('か', '');
+    engine.loadQuestion('か', 'か');
 
     const before = engine.getCurrentDisplay();
     const result = engine.handleKeyPress('z');
@@ -263,7 +263,7 @@ describe('Mistype Handling', () => {
 
   it('途中の不正キーで位置が戻らない', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('かき', '');
+    engine.loadQuestion('かき', 'かき');
 
     engine.handleKeyPress('k');
     engine.handleKeyPress('a');

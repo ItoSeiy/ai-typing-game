@@ -100,8 +100,8 @@ export class GameScreen {
     this.container.style.display = 'none';
   }
 
-  updateQuestion(textJa, imagePath) {
-    this.questionText.textContent = textJa || '';
+  updateQuestion(textDisplay, imagePath) {
+    this.questionText.textContent = textDisplay || '';
 
     if (imagePath) {
       this.questionImage.src = imagePath;

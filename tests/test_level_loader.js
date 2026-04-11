@@ -2,7 +2,7 @@ import { describe, it, mock } from 'node:test';
 import assert from 'node:assert/strict';
 
 // Mock fetch before importing LevelLoader
-const csvContent = 'id,text_ja,text_romaji,image_path,category,difficulty_weight\n1,さくら,sakura,img/sakura.png,flower,1.0\n2,やま,yama,img/yama.png,nature,1.5';
+const csvContent = 'id,text_display,text_kana,image_path,category,difficulty_weight\n1,さくら,さくら,img/sakura.png,flower,1.0\n2,やま,やま,img/yama.png,nature,1.5';
 
 globalThis.fetch = async (url) => ({
   ok: true,
@@ -18,8 +18,8 @@ describe('LevelLoader', () => {
     const questions = await loader.loadLevel('assets/levels/test.csv');
     assert.equal(questions.length, 2);
     assert.equal(questions[0].id, 1);
-    assert.equal(questions[0].textJa, 'さくら');
-    assert.equal(questions[0].textRomaji, 'sakura');
+    assert.equal(questions[0].textDisplay, 'さくら');
+    assert.equal(questions[0].textKana, 'さくら');
     assert.equal(questions[0].imagePath, 'img/sakura.png');
     assert.equal(questions[0].category, 'flower');
     assert.equal(questions[0].difficultyWeight, 1.0);
@@ -47,7 +47,7 @@ describe('LevelLoader', () => {
     const originalFetch = globalThis.fetch;
     globalThis.fetch = async () => ({
       ok: true,
-      text: async () => 'id,text_ja,text_romaji,image_path,category,difficulty_weight\n1,あ,a,,,1'
+      text: async () => 'id,text_display,text_kana,image_path,category,difficulty_weight\n1,あ,あ,,,1'
     });
     const loader = new LevelLoader();
     const q = await loader.loadLevel('test.csv');

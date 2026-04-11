@@ -34,8 +34,8 @@ export class LevelLoader {
 
     return rows.map((row) => ({
       id: toNumber(row.id, 'id'),
-      textJa: row.text_ja ?? '',
-      textRomaji: row.text_romaji ?? '',
+      textDisplay: row.text_display ?? '',
+      textKana: row.text_kana ?? '',
       imagePath: row.image_path ?? '',
       category: row.category ?? '',
       difficultyWeight: toNumber(row.difficulty_weight, 'difficulty_weight')

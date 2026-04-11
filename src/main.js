@@ -87,17 +87,17 @@ async function loadQuestions() {
   try {
     const rawQuestions = await levelLoader.loadLevel(CONFIG.defaultCSVPath);
     questions = rawQuestions.map(q => ({
-      ja: q.textJa,
-      romaji: q.textRomaji,
+      display: q.textDisplay,
+      kana: q.textKana,
       imagePath: q.imagePath || ''
     }));
     shuffleArray(questions);
   } catch (e) {
     console.error('Failed to load questions:', e);
     questions = [
-      { ja: 'さくら', romaji: 'sakura', imagePath: '' },
-      { ja: 'にほん', romaji: 'nihon', imagePath: '' },
-      { ja: 'たいぴんぐ', romaji: 'taipingu', imagePath: '' }
+      { display: 'さくら', kana: 'さくら', imagePath: '' },
+      { display: 'にほん', kana: 'にほん', imagePath: '' },
+      { display: 'たいぴんぐ', kana: 'たいぴんぐ', imagePath: '' }
     ];
   }
 }
@@ -116,7 +116,7 @@ function nextQuestion() {
     shuffleArray(questions);
   }
   const q = questions[currentQuestionIndex];
-  typingEngine.loadQuestion(q.ja, q.romaji);
+  typingEngine.loadQuestion(q.display, q.kana);
   currentQuestionIndex++;
   updateGameDisplay();
 }

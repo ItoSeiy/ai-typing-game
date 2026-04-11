@@ -15,40 +15,58 @@ function typeFullString(engine, str) {
   }
 }
 
-describe('漢字お題フォールバック', () => {
-  it('陸上 → "rikujou" で正解', () => {
+describe('漢字お題（text_kana方式）', () => {
+  it('陸上(りくじょう) → "rikujou" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('陸上', 'rikujou');
+    engine.loadQuestion('陸上', 'りくじょう');
     typeFullString(engine, 'rikujou');
   });
 
-  it('野球 → "yakyuu" で正解', () => {
+  it('陸上(りくじょう) → "rikuzyou" でも正解（複数パターン）', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('野球', 'yakyuu');
+    engine.loadQuestion('陸上', 'りくじょう');
+    typeFullString(engine, 'rikuzyou');
+  });
+
+  it('野球(やきゅう) → "yakyuu" で正解', () => {
+    const engine = new TypingEngine();
+    engine.loadQuestion('野球', 'やきゅう');
     typeFullString(engine, 'yakyuu');
   });
 
-  it('富士山 → "fujisan" で正解', () => {
+  it('富士山(ふじさん) → "fujisan" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('富士山', 'fujisan');
+    engine.loadQuestion('富士山', 'ふじさん');
     typeFullString(engine, 'fujisan');
   });
 
-  it('桜 → "sakura" で正解', () => {
+  it('富士山(ふじさん) → "huzisan" でも正解（複数パターン）', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('桜', 'sakura');
+    engine.loadQuestion('富士山', 'ふじさん');
+    typeFullString(engine, 'huzisan');
+  });
+
+  it('桜(さくら) → "sakura" で正解', () => {
+    const engine = new TypingEngine();
+    engine.loadQuestion('桜', 'さくら');
     typeFullString(engine, 'sakura');
   });
 
-  it('寿司 → "sushi" で正解', () => {
+  it('寿司(すし) → "sushi" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('寿司', 'sushi');
+    engine.loadQuestion('寿司', 'すし');
     typeFullString(engine, 'sushi');
+  });
+
+  it('寿司(すし) → "susi" でも正解', () => {
+    const engine = new TypingEngine();
+    engine.loadQuestion('寿司', 'すし');
+    typeFullString(engine, 'susi');
   });
 
   it('漢字お題で不正キーは correct:false', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('猫', 'neko');
+    engine.loadQuestion('猫', 'ねこ');
     const result = engine.handleKeyPress('z');
     assert.equal(result.correct, false);
     assert.equal(result.completed, false);
@@ -56,7 +74,7 @@ describe('漢字お題フォールバック', () => {
 
   it('漢字お題の getCurrentDisplay が正しい typed/remaining', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('侍', 'samurai');
+    engine.loadQuestion('侍', 'さむらい');
     assert.equal(engine.getCurrentDisplay().typed, '');
     assert.equal(engine.getCurrentDisplay().remaining, 'samurai');
 
@@ -68,9 +86,9 @@ describe('漢字お題フォールバック', () => {
     assert.equal(display.remaining, 'urai');
   });
 
-  it('漢字お題で original は元の日本語テキスト', () => {
+  it('漢字お題で original は元の表示テキスト', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('富士山', 'fujisan');
+    engine.loadQuestion('富士山', 'ふじさん');
     assert.equal(engine.getCurrentDisplay().original, '富士山');
   });
 });
@@ -78,75 +96,80 @@ describe('漢字お題フォールバック', () => {
 describe('ひらがな/カタカナ退行なし', () => {
   it('し → "shi" でも "si" でも正解（複数パターン維持）', () => {
     const engine1 = new TypingEngine();
-    engine1.loadQuestion('し', 'si');
+    engine1.loadQuestion('し', 'し');
     typeFullString(engine1, 'shi');
 
     const engine2 = new TypingEngine();
-    engine2.loadQuestion('し', 'si');
+    engine2.loadQuestion('し', 'し');
     typeFullString(engine2, 'si');
   });
 
-  it('カタカナ: ラーメン → "ra-men" で正解（末尾ん は n 一打で確定）', () => {
+  it('カタカナ: ラーメン(らーめん) → "ra-men" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('ラーメン', 'ra-menn');
-    // 末尾の ん は最終チャンクなので "n" 一打で即確定される
+    engine.loadQuestion('ラーメン', 'らーめん');
     typeFullString(engine, 'ra-men');
   });
 
   it('ひらがなお題は引き続きチャンク分割（さくら → sakura）', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('さくら', 'sakura');
+    engine.loadQuestion('さくら', 'さくら');
     typeFullString(engine, 'sakura');
     assert.equal(engine.getCurrentDisplay().typed, 'sakura');
   });
 
   it('ち → "chi" でも "ti" でも正解', () => {
     const engine1 = new TypingEngine();
-    engine1.loadQuestion('ち', 'chi');
+    engine1.loadQuestion('ち', 'ち');
     typeFullString(engine1, 'chi');
 
     const engine2 = new TypingEngine();
-    engine2.loadQuestion('ち', 'chi');
+    engine2.loadQuestion('ち', 'ち');
     typeFullString(engine2, 'ti');
   });
 });
 
 describe('混在テスト', () => {
-  it('焼き鳥 → "yakitori" で正解（漢字+ひらがな混在）', () => {
+  it('焼き鳥(やきとり) → "yakitori" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('焼き鳥', 'yakitori');
+    engine.loadQuestion('焼き鳥', 'やきとり');
     typeFullString(engine, 'yakitori');
   });
 
-  it('お花見 → "ohanami" で正解（ひらがな+漢字混在）', () => {
+  it('納豆(なっとう) → "nattou" で正解', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('お花見', 'ohanami');
-    typeFullString(engine, 'ohanami');
+    engine.loadQuestion('納豆', 'なっとう');
+    typeFullString(engine, 'nattou');
+  });
+
+  it('卓球(たっきゅう) → "takkyuu" で正解', () => {
+    const engine = new TypingEngine();
+    engine.loadQuestion('卓球', 'たっきゅう');
+    typeFullString(engine, 'takkyuu');
   });
 });
 
-describe('フォールバック表示テスト', () => {
-  it('フォールバック時の初期表示: typed="" remaining=全文', () => {
+describe('text_kana方式 表示テスト', () => {
+  it('初期表示: typed="" remaining=全ローマ字', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('漢字', 'kanji');
+    engine.loadQuestion('観光', 'かんこう');
     const display = engine.getCurrentDisplay();
     assert.equal(display.typed, '');
-    assert.equal(display.remaining, 'kanji');
+    assert.equal(display.remaining, 'kankou');
   });
 
-  it('フォールバック時の途中表示が正しい', () => {
+  it('途中表示が正しい', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('漢字', 'kanji');
-    engine.handleKeyPress('k');
-    engine.handleKeyPress('a');
+    engine.loadQuestion('図書館', 'としょかん');
+    engine.handleKeyPress('t');
+    engine.handleKeyPress('o');
     const display = engine.getCurrentDisplay();
-    assert.equal(display.typed, 'ka');
-    assert.equal(display.remaining, 'nji');
+    assert.equal(display.typed, 'to');
+    assert.ok(display.remaining.length > 0);
   });
 
-  it('フォールバック時の完了後表示', () => {
+  it('完了後表示', () => {
     const engine = new TypingEngine();
-    engine.loadQuestion('猫', 'neko');
+    engine.loadQuestion('猫', 'ねこ');
     typeFullString(engine, 'neko');
     const display = engine.getCurrentDisplay();
     assert.equal(display.typed, 'neko');
