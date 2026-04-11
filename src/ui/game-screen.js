@@ -94,10 +94,12 @@ export class GameScreen {
 
   show() {
     this.container.style.display = 'flex';
+    document.body.classList.add('game-active');
   }
 
   hide() {
     this.container.style.display = 'none';
+    document.body.classList.remove('game-active');
   }
 
   updateQuestion(textDisplay, imagePath) {

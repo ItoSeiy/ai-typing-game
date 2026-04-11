@@ -22,6 +22,11 @@ body {
   width: 100%;
   height: 100%;
   z-index: 0;
+  transition: opacity 0.3s ease;
+}
+
+body.game-active #matrix-canvas {
+  opacity: 0.3;
 }
 
 /* ─── Game Container ─── */
@@ -136,7 +141,7 @@ body {
 }
 
 .remaining {
-  color: #0a4a0a;
+  color: #5a9a5a;
   text-shadow: none;
 }
 
@@ -338,6 +343,17 @@ input[type="checkbox"] {
   background: rgba(0, 255, 65, 0.3);
 }
 
+.result-screen .screen__buttons {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
+}
+
+.result-screen .screen__button {
+  text-shadow: 0 0 8px #00ff41;
+  box-shadow: 0 0 5px rgba(0, 255, 65, 0.2);
+}
+
 .screen__footer {
   margin-top: 2rem;
   font-size: 0.9rem;
@@ -367,6 +383,9 @@ input[type="checkbox"] {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
 }
 
 .game-screen__timer-wrap {
@@ -407,18 +426,26 @@ input[type="checkbox"] {
 }
 
 .game-screen__timer-text {
-  font-size: 1.2rem;
+  font-size: 1.6rem;
   min-width: 2em;
   text-align: right;
+  font-weight: bold;
+  text-shadow:
+    0 0 10px #00ff41,
+    0 0 20px #00ff41;
 }
 
 .game-screen__score {
-  font-size: 1.5rem;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 .game-screen__question {
   text-align: center;
   margin-bottom: 1.5rem;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 1.5rem 2.5rem;
+  border-radius: 8px;
 }
 
 .game-screen__question-image {
@@ -431,24 +458,33 @@ input[type="checkbox"] {
 }
 
 .game-screen__question-text {
-  font-size: 2.5rem;
+  font-size: 3rem;
   color: #ffffff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  font-weight: bold;
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.8),
+    0 0 20px rgba(255, 255, 255, 0.4),
+    0 0 40px rgba(0, 255, 65, 0.2);
 }
 
 .game-screen__typing {
-  font-size: 2rem;
-  letter-spacing: 0.1em;
+  font-size: 2.2rem;
+  letter-spacing: 0.15em;
   text-align: center;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 1rem 2rem;
+  border-radius: 8px;
 }
 
 .game-screen__typed {
   color: #00ff41;
-  text-shadow: 0 0 10px #00ff41;
+  text-shadow:
+    0 0 10px #00ff41,
+    0 0 20px #00ff41;
 }
 
 .game-screen__remaining {
-  color: #0a4a0a;
+  color: #5a9a5a;
   text-shadow: none;
 }
 
@@ -469,15 +505,23 @@ input[type="checkbox"] {
 
 /* ─── Result Screen (BEM) ─── */
 .result-screen__score {
-  font-size: 4rem;
+  font-size: 5rem;
   margin-bottom: 2rem;
+  text-shadow:
+    0 0 10px #00ff41,
+    0 0 20px #00ff41,
+    0 0 40px #00cc33,
+    0 0 80px #009922;
 }
 
 .result-screen__stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem 2rem;
+  gap: 1.2rem 2.5rem;
   margin-bottom: 2rem;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
 }
 
 .result-screen__stat {
@@ -488,14 +532,18 @@ input[type="checkbox"] {
 }
 
 .result-screen__stat-label {
-  font-size: 0.9rem;
-  opacity: 0.7;
+  font-size: 0.95rem;
+  opacity: 1;
+  color: #00cc33;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
 }
 
 .result-screen__stat-value {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   color: #ffffff;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  text-shadow:
+    0 0 8px rgba(255, 255, 255, 0.7),
+    0 0 16px rgba(0, 255, 65, 0.3);
 }
 
 /* ─── Settings Screen (BEM) ─── */
