@@ -28,16 +28,38 @@ export class TypingEngine {
 
   /**
    * 問題をロードしてチャンク分割する。
-   * @param {string} textJa  ひらがなテキスト（チャンク解析のソース）
-   * @param {string} _textRomaji  フォールバック用（現在未使用、互換性のため残す）
+   * 漢字等のテーブル外文字が含まれる場合は textRomaji にフォールバックする。
+   * @param {string} textJa  日本語テキスト（チャンク解析のソース）
+   * @param {string} textRomaji  フォールバック用ローマ字
    */
-  loadQuestion(textJa, _textRomaji) {
+  loadQuestion(textJa, textRomaji) {
     this.original = textJa;
     const normalized = katakanaToHiragana(textJa);
-    this.chunks = this._parseText(normalized);
+    const chunks = this._parseText(normalized);
+
+    // 漢字検出: romaji-tableに無い文字がリテラル通過しているか
+    const hasUnknown = chunks.some(c =>
+      c.patterns.length === 1 && c.patterns[0] === c.kana && !ROMAJI_TABLE[c.kana]
+    );
+
+    if (hasUnknown && textRomaji) {
+      this.chunks = this._buildFallbackChunks(textRomaji);
+    } else {
+      this.chunks = chunks;
+    }
+
     this.currentChunkIndex = 0;
     this.buffer = '';
     this.completedRomaji = '';
+  }
+
+  /**
+   * textRomaji をそのまま1文字ずつのチャンク配列に変換する。
+   * @param {string} textRomaji  ローマ字文字列
+   * @returns {{ kana: string, patterns: string[] }[]}
+   */
+  _buildFallbackChunks(textRomaji) {
+    return [...textRomaji].map(ch => ({ kana: ch, patterns: [ch] }));
   }
 
   /**
