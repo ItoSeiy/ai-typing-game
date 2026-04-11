@@ -5,8 +5,8 @@ import { ScoreManager } from './core/score-manager.js';
 import { InputHandler } from './core/input-handler.js';
 
 // ─── Data modules ───
-import { CONFIG } from '../data/config.js';
-import { LevelLoader } from './data/level-loader.js';
+import { CONFIG } from '../assets/config.js';
+import { LevelLoader } from './loader/level-loader.js';
 
 // ─── Audio modules ───
 import { AudioManager } from './audio/audio-manager.js';

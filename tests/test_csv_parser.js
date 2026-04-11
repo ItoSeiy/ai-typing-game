@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseCSV } from '../src/data/csv-parser.js';
+import { parseCSV } from '../src/loader/csv-parser.js';
 
 describe('parseCSV', () => {
   it('parses basic CSV with header and rows', () => {

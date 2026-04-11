@@ -10,12 +10,12 @@ globalThis.fetch = async (url) => ({
   text: async () => csvContent
 });
 
-const { LevelLoader, shuffleQuestions } = await import('../src/data/level-loader.js');
+const { LevelLoader, shuffleQuestions } = await import('../src/loader/level-loader.js');
 
 describe('LevelLoader', () => {
   it('loadLevel returns parsed questions with camelCase keys', async () => {
     const loader = new LevelLoader();
-    const questions = await loader.loadLevel('data/levels/test.csv');
+    const questions = await loader.loadLevel('assets/levels/test.csv');
     assert.equal(questions.length, 2);
     assert.equal(questions[0].id, 1);
     assert.equal(questions[0].textJa, 'さくら');
@@ -27,7 +27,7 @@ describe('LevelLoader', () => {
 
   it('loadLevel converts numeric fields to numbers', async () => {
     const loader = new LevelLoader();
-    const questions = await loader.loadLevel('data/levels/test.csv');
+    const questions = await loader.loadLevel('assets/levels/test.csv');
     assert.equal(typeof questions[0].id, 'number');
     assert.equal(typeof questions[1].difficultyWeight, 'number');
   });

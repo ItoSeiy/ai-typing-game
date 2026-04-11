@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { CONFIG } from '../data/config.js';
+import { CONFIG } from '../assets/config.js';
 
 describe('CONFIG', () => {
   it('is a non-null object', () => {

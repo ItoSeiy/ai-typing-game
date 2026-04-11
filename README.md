@@ -43,18 +43,17 @@ Matrix風タイピングゲーム（寿司打ライク）
 ├─ index.html
 ├─ styles.css
 ├─ package.json / package-lock.json
-├─ scripts/
-│  └─ generate-images.js
-├─ data/
-│  └─ levels/
-│     └─ *.csv
 ├─ assets/
-│  └─ images/
+│  ├─ images/          # お題画像(PNG)
+│  ├─ levels/
+│  │  └─ normal.csv    # お題CSV
+│  └─ config.js        # ゲーム設定定数
 ├─ src/
-│  ├─ core/        # 入力処理、ゲーム進行、スコア管理、CSV/ローマ字関連
-│  ├─ ui/          # 画面描画、タイトル/ゲーム/結果/設定のUIロジック
-│  ├─ audio/       # SE 定義と音声再生管理
-│  └─ data/        # レベル読み込みやデータ整形
+│  ├─ main.js
+│  ├─ core/            # ゲームループ、入力、スコア、ローマ字
+│  ├─ ui/              # 画面描画、Matrix演出
+│  ├─ audio/           # SE管理
+│  └─ loader/          # CSVパーサー、レベルローダー
 └─ tests/
    └─ test_*.js
 ```
