@@ -6,6 +6,7 @@ export class SettingsScreen {
     this.container = containerEl;
     this._backCallback = null;
     this._audioManager = null;
+    this._previewTimer = null;
     this._build();
   }
 
@@ -87,6 +88,11 @@ export class SettingsScreen {
       if (this._audioManager) {
         this._audioManager.setVolume(val / 100);
       }
+      if (this._muted) {
+        this._clearPreviewTimer();
+        return;
+      }
+      this._schedulePreview();
     });
 
     this.muteBtn.addEventListener('click', () => {
@@ -95,6 +101,11 @@ export class SettingsScreen {
       this.muteBtn.classList.toggle('settings-screen__mute-btn--active', this._muted);
       if (this._audioManager) {
         this._audioManager.setMute(this._muted);
+      }
+      if (this._muted) {
+        this._clearPreviewTimer();
+      } else {
+        this._playPreviewNow();
       }
     });
 
@@ -129,5 +140,30 @@ export class SettingsScreen {
 
   setAudioManager(audioManager) {
     this._audioManager = audioManager;
+  }
+
+  _clearPreviewTimer() {
+    if (this._previewTimer !== null) {
+      clearTimeout(this._previewTimer);
+      this._previewTimer = null;
+    }
+  }
+
+  _schedulePreview() {
+    if (!this._audioManager || this._muted) return;
+
+    this._clearPreviewTimer();
+    this._previewTimer = setTimeout(() => {
+      this._previewTimer = null;
+      if (!this._audioManager || this._muted) return;
+      this._audioManager.playPreviewSE?.();
+    }, 200);
+  }
+
+  _playPreviewNow() {
+    if (!this._audioManager || this._muted) return;
+
+    this._clearPreviewTimer();
+    this._audioManager.playPreviewSE?.();
   }
 }

@@ -51,6 +51,14 @@ export class AudioManager {
   }
 
   /**
+   * Play the settings preview sound.
+   * Uses the type SE so volume changes have an immediate audible reference.
+   */
+  playPreviewSE() {
+    this.playSE('type');
+  }
+
+  /**
    * Set master volume (0.0–1.0). Clamped.
    * @param {number} v
    */
