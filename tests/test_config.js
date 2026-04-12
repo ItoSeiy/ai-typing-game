@@ -18,11 +18,6 @@ describe('CONFIG', () => {
     assert.ok(CONFIG.countdownDuration > 0);
   });
 
-  it('has maxQuestions field', () => {
-    assert.ok('maxQuestions' in CONFIG);
-    assert.equal(typeof CONFIG.maxQuestions, 'number');
-  });
-
   it('has defaultCSVPath as a string', () => {
     assert.equal(typeof CONFIG.defaultCSVPath, 'string');
     assert.ok(CONFIG.defaultCSVPath.length > 0);
@@ -30,15 +25,14 @@ describe('CONFIG', () => {
 
   it('has scoring object with required fields', () => {
     assert.equal(typeof CONFIG.scoring, 'object');
-    assert.equal(typeof CONFIG.scoring.correctPoint, 'number');
+    assert.equal(typeof CONFIG.scoring.pointPerQuestion, 'number');
     assert.equal(typeof CONFIG.scoring.missPoint, 'number');
-    assert.equal(typeof CONFIG.scoring.completionBonus, 'number');
   });
 
-  it('has localStorage object with required keys', () => {
-    assert.equal(typeof CONFIG.localStorage, 'object');
-    assert.equal(typeof CONFIG.localStorage.seVolumeKey, 'string');
-    assert.equal(typeof CONFIG.localStorage.seMuteKey, 'string');
-    assert.equal(typeof CONFIG.localStorage.highScoreKey, 'string');
+  it('does not have removed fields', () => {
+    assert.equal('maxQuestions' in CONFIG, false);
+    assert.equal('localStorage' in CONFIG, false);
+    assert.equal('correctPoint' in CONFIG.scoring, false);
+    assert.equal('completionBonus' in CONFIG.scoring, false);
   });
 });

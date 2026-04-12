@@ -1,25 +1,23 @@
+import { CONFIG } from '../../assets/config.js';
+
 export class ScoreManager {
   constructor() {
     this.correctCount = 0;
     this.missCount = 0;
     this.score = 0;
-    this.correctPoint = 10;
-    this.missPoint = 0;
-    this.completionBonus = 50;
   }
 
-  addCorrect() {
-    this.correctCount++;
-    this.score += this.correctPoint;
+  addQuestionComplete() {
+    this.score += CONFIG.scoring.pointPerQuestion;
   }
 
   addMiss() {
     this.missCount++;
-    this.score += this.missPoint;
+    this.score += CONFIG.scoring.missPoint;
   }
 
-  addCompletionBonus() {
-    this.score += this.completionBonus;
+  addCorrect() {
+    this.correctCount++;
   }
 
   getScore() {

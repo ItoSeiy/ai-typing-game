@@ -184,7 +184,7 @@ function startGame() {
     }
 
     if (result.completed) {
-      scoreManager.addCompletionBonus();
+      scoreManager.addQuestionComplete();
       audioManager.playSE('correct');
       nextQuestion();
     } else {
