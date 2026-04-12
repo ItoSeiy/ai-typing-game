@@ -18,6 +18,7 @@ import { TitleScreen } from './ui/title-screen.js';
 import { GameScreen } from './ui/game-screen.js';
 import { ResultScreen } from './ui/result-screen.js';
 import { SettingsScreen } from './ui/settings-screen.js';
+import { GameMenu } from './ui/game-menu.js';
 
 // ─── Game State ───
 const State = {
@@ -50,10 +51,13 @@ const titleScreen = new TitleScreen(document.getElementById('title-screen'));
 const gameScreen = new GameScreen(document.getElementById('game-screen'));
 const resultScreen = new ResultScreen(document.getElementById('result-screen'));
 const settingsScreen = new SettingsScreen(document.getElementById('settings-screen'));
+const gameMenu = new GameMenu();
 gameScreen.setImagePreloader(imagePreloader);
 
-// Connect AudioManager to SettingsScreen
+// Connect AudioManager to screens
 settingsScreen.setAudioManager(audioManager);
+gameMenu.setAudioManager(audioManager);
+gameMenu.attach(document.getElementById('game-screen'));
 
 // ─── Matrix Rain ───
 function resizeCanvas() {
@@ -69,6 +73,7 @@ function hideAllScreens() {
   gameScreen.hide();
   resultScreen.hide();
   settingsScreen.hide();
+  gameMenu.hideAll();
 }
 
 function showTitle() {
@@ -168,6 +173,7 @@ function startGame() {
   nextQuestion();
 
   audioManager.playSE('start');
+  gameMenu.showButton();
 
   inputHandler.onKeyDown((key) => {
     if (currentState !== State.PLAYING) return;
@@ -249,6 +255,36 @@ resultScreen.onTitle(() => {
 
 settingsScreen.onBack(() => {
   audioManager.saveSettings();
+  showTitle();
+});
+
+// ─── Game Menu Callbacks ───
+gameMenu.onOpen(() => {
+  gameLoop.pause();
+  inputHandler.disable();
+});
+
+gameMenu.onClose(() => {
+  if (currentState === State.PLAYING) {
+    gameLoop.resume();
+    inputHandler.enable();
+  }
+});
+
+gameMenu.onRestart(async () => {
+  gameLoop.stop();
+  inputHandler.disable();
+  inputHandler.destroy();
+  if (questions.length === 0) {
+    await loadQuestions();
+  }
+  startCountdown();
+});
+
+gameMenu.onBackToTitle(() => {
+  gameLoop.stop();
+  inputHandler.disable();
+  inputHandler.destroy();
   showTitle();
 });
 
