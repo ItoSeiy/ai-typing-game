@@ -237,6 +237,7 @@ async function onStartClicked() {
 }
 
 titleScreen.onSettings(() => {
+  ensureAudioInit();
   currentState = State.SETTINGS;
   hideAllScreens();
   settingsScreen.show();
