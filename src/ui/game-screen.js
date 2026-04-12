@@ -4,7 +4,12 @@
 export class GameScreen {
   constructor(containerEl) {
     this.container = containerEl;
+    this.imagePreloader = null;
     this._build();
+  }
+
+  setImagePreloader(imagePreloader) {
+    this.imagePreloader = imagePreloader;
   }
 
   _build() {
@@ -106,7 +111,8 @@ export class GameScreen {
     this.questionText.textContent = textDisplay || '';
 
     if (imagePath) {
-      this.questionImage.src = imagePath;
+      const preloadedImage = this.imagePreloader?.get(imagePath);
+      this.questionImage.src = preloadedImage?.src || imagePath;
       this.questionImage.style.display = 'block';
     } else {
       this.questionImage.style.display = 'none';

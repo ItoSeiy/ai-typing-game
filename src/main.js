@@ -7,6 +7,7 @@ import { InputHandler } from './core/input-handler.js';
 // ─── Data modules ───
 import { CONFIG } from '../assets/config.js';
 import { LevelLoader } from './loader/level-loader.js';
+import { ImagePreloader } from './core/image-preloader.js';
 
 // ─── Audio modules ───
 import { AudioManager } from './audio/audio-manager.js';
@@ -38,6 +39,7 @@ const typingEngine = new TypingEngine();
 const scoreManager = new ScoreManager();
 const inputHandler = new InputHandler();
 const levelLoader = new LevelLoader();
+const imagePreloader = new ImagePreloader();
 const audioManager = new AudioManager();
 
 // ─── UI Instances ───
@@ -48,6 +50,7 @@ const titleScreen = new TitleScreen(document.getElementById('title-screen'));
 const gameScreen = new GameScreen(document.getElementById('game-screen'));
 const resultScreen = new ResultScreen(document.getElementById('result-screen'));
 const settingsScreen = new SettingsScreen(document.getElementById('settings-screen'));
+gameScreen.setImagePreloader(imagePreloader);
 
 // Connect AudioManager to SettingsScreen
 settingsScreen.setAudioManager(audioManager);
@@ -92,6 +95,7 @@ async function loadQuestions() {
       imagePath: q.imagePath || ''
     }));
     shuffleArray(questions);
+    await imagePreloader.loadAll(questions);
   } catch (e) {
     console.error('Failed to load questions:', e);
     questions = [
