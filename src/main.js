@@ -190,7 +190,8 @@ function startGame() {
     }
 
     if (result.completed) {
-      scoreManager.addQuestionComplete(q.textKana.length);
+      const currentQ = questions[currentQuestionIndex - 1];
+      scoreManager.addQuestionComplete(currentQ?.kana.length ?? 0);
       audioManager.playSE('correct');
       nextQuestion();
     } else {
