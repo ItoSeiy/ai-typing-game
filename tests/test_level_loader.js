@@ -2,7 +2,7 @@ import { describe, it, mock } from 'node:test';
 import assert from 'node:assert/strict';
 
 // Mock fetch before importing LevelLoader
-const csvContent = 'id,text_display,text_kana,image_path,category,difficulty_weight\n1,さくら,さくら,img/sakura.png,flower,1.0\n2,やま,やま,img/yama.png,nature,1.5';
+const csvContent = 'id,text_display,text_kana,image_path\n1,さくら,さくら,img/sakura.png\n2,やま,やま,img/yama.png';
 
 globalThis.fetch = async (url) => ({
   ok: true,
@@ -21,15 +21,13 @@ describe('LevelLoader', () => {
     assert.equal(questions[0].textDisplay, 'さくら');
     assert.equal(questions[0].textKana, 'さくら');
     assert.equal(questions[0].imagePath, 'img/sakura.png');
-    assert.equal(questions[0].category, 'flower');
-    assert.equal(questions[0].difficultyWeight, 1.0);
+    assert.deepEqual(Object.keys(questions[0]), ['id', 'textDisplay', 'textKana', 'imagePath']);
   });
 
   it('loadLevel converts numeric fields to numbers', async () => {
     const loader = new LevelLoader();
     const questions = await loader.loadLevel('assets/levels/test.csv');
     assert.equal(typeof questions[0].id, 'number');
-    assert.equal(typeof questions[1].difficultyWeight, 'number');
   });
 
   it('loadLevel throws on HTTP error', async () => {
@@ -47,12 +45,11 @@ describe('LevelLoader', () => {
     const originalFetch = globalThis.fetch;
     globalThis.fetch = async () => ({
       ok: true,
-      text: async () => 'id,text_display,text_kana,image_path,category,difficulty_weight\n1,あ,あ,,,1'
+      text: async () => 'id,text_display,text_kana,image_path\n1,あ,あ,'
     });
     const loader = new LevelLoader();
     const q = await loader.loadLevel('test.csv');
     assert.equal(q[0].imagePath, '');
-    assert.equal(q[0].category, '');
     globalThis.fetch = originalFetch;
   });
 });

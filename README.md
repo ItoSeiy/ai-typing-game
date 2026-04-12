@@ -33,7 +33,7 @@ Matrix風ローマ字タイピングゲーム
 - `tests/` — ユニットテスト
 
 ## CSV設計
-- 列: `id`, `text_display`, `text_kana`, `image_path`, `category`, `difficulty_weight`
+- 列: `id`, `text_display`, `text_kana`, `image_path`
 - `text_display`: 画面に表示するテキスト（漢字・カタカナ・ひらがな）
 - `text_kana`: ひらがな読み（入力判定に使用）
 - カスタマイズ: `assets/levels/normal.csv` を編集するだけでお題追加可能
@@ -55,7 +55,7 @@ npx serve .
 node --test tests/test_*.js
 ```
 
-現在151テスト全PASS。
+現在155テスト全PASS。
 
 ## 開発体制
 Shogunマルチエージェントシステムで開発:
