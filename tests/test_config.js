@@ -25,13 +25,14 @@ describe('CONFIG', () => {
 
   it('has scoring object with required fields', () => {
     assert.equal(typeof CONFIG.scoring, 'object');
-    assert.equal(typeof CONFIG.scoring.pointPerQuestion, 'number');
+    assert.equal(typeof CONFIG.scoring.pointPerChar, 'number');
     assert.equal(typeof CONFIG.scoring.missPoint, 'number');
   });
 
   it('does not have removed fields', () => {
     assert.equal('maxQuestions' in CONFIG, false);
     assert.equal('localStorage' in CONFIG, false);
+    assert.equal('pointPerQuestion' in CONFIG.scoring, false);
     assert.equal('correctPoint' in CONFIG.scoring, false);
     assert.equal('completionBonus' in CONFIG.scoring, false);
   });

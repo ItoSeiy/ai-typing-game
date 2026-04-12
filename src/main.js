@@ -190,7 +190,7 @@ function startGame() {
     }
 
     if (result.completed) {
-      scoreManager.addQuestionComplete();
+      scoreManager.addQuestionComplete(q.textKana.length);
       audioManager.playSE('correct');
       nextQuestion();
     } else {

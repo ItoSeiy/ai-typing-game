@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, afterEach } from 'node:test';
+import { describe, it, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { CONFIG } from '../assets/config.js';
 import { ScoreManager } from '../src/core/score-manager.js';
@@ -35,10 +35,10 @@ describe('ScoreManager', () => {
     assert.equal(sm.getScore(), CONFIG.scoring.missPoint);
   });
 
-  it('addQuestionComplete adds CONFIG.scoring.pointPerQuestion', () => {
+  it('addQuestionComplete adds CONFIG.scoring.pointPerChar × kanaLength', () => {
     const sm = new ScoreManager();
-    sm.addQuestionComplete();
-    assert.equal(sm.getScore(), CONFIG.scoring.pointPerQuestion);
+    sm.addQuestionComplete(5);
+    assert.equal(sm.getScore(), CONFIG.scoring.pointPerChar * 5);
   });
 
   it('getAccuracy returns 100 when no keystrokes', () => {
@@ -74,7 +74,7 @@ describe('ScoreManager', () => {
     sm.addCorrect();
     sm.addCorrect();
     sm.addMiss();
-    sm.addQuestionComplete();
+    sm.addQuestionComplete(3);
     sm.reset();
     assert.equal(sm.getScore(), 0);
     assert.equal(sm.getCorrectCount(), 0);
@@ -83,26 +83,38 @@ describe('ScoreManager', () => {
 
   it('score accumulates across question completions', () => {
     const sm = new ScoreManager();
-    sm.addQuestionComplete();
-    sm.addQuestionComplete();
-    assert.equal(sm.getScore(), CONFIG.scoring.pointPerQuestion * 2);
+    sm.addQuestionComplete(2);
+    sm.addQuestionComplete(3);
+    assert.equal(sm.getScore(), CONFIG.scoring.pointPerChar * 5);
   });
 });
 
 describe('ScoreManager CONFIG-driven behavior', () => {
-  const origPointPerQuestion = CONFIG.scoring.pointPerQuestion;
+  const origPointPerChar = CONFIG.scoring.pointPerChar;
   const origMissPoint = CONFIG.scoring.missPoint;
 
   afterEach(() => {
-    CONFIG.scoring.pointPerQuestion = origPointPerQuestion;
+    CONFIG.scoring.pointPerChar = origPointPerChar;
     CONFIG.scoring.missPoint = origMissPoint;
   });
 
-  it('pointPerQuestion=200 → 1問完了で200点加算', () => {
-    CONFIG.scoring.pointPerQuestion = 200;
+  it('pointPerChar=30 → 1問完了で文字数比例の加点', () => {
+    CONFIG.scoring.pointPerChar = 30;
     const sm = new ScoreManager();
-    sm.addQuestionComplete();
-    assert.equal(sm.getScore(), 200);
+    sm.addQuestionComplete(4);
+    assert.equal(sm.getScore(), 120);
+  });
+
+  it('短いお題と長いお題でスコアが異なる', () => {
+    const shortSm = new ScoreManager();
+    shortSm.addQuestionComplete(2);
+
+    const longSm = new ScoreManager();
+    longSm.addQuestionComplete(7);
+
+    assert.equal(shortSm.getScore(), CONFIG.scoring.pointPerChar * 2);
+    assert.equal(longSm.getScore(), CONFIG.scoring.pointPerChar * 7);
+    assert.notEqual(shortSm.getScore(), longSm.getScore());
   });
 
   it('missPoint=-5 → ミス1回で5点減算', () => {

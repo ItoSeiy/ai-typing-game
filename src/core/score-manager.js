@@ -7,8 +7,8 @@ export class ScoreManager {
     this.score = 0;
   }
 
-  addQuestionComplete() {
-    this.score += CONFIG.scoring.pointPerQuestion;
+  addQuestionComplete(kanaLength = 0) {
+    this.score += kanaLength * CONFIG.scoring.pointPerChar;
   }
 
   addMiss() {

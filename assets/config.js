@@ -3,7 +3,7 @@ export const CONFIG = {
   countdownDuration: 3,
   defaultCSVPath: 'assets/levels/normal.csv',
   scoring: {
-    pointPerQuestion: 100,
+    pointPerChar: 20,
     missPoint: 0
   }
 };
