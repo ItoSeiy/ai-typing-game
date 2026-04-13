@@ -13,4 +13,10 @@ jobs:
         with:
           node-version: '20'
       - run: npm ci
-      - run: npm test
+      - run: npm test -- --test-reporter=junit --test-reporter-destination=test-results.xml
+      - uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Test Results
+          path: test-results.xml
+          reporter: java-junit
