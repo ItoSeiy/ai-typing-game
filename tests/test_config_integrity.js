@@ -4,14 +4,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { CONFIG } from '../assets/config.js';
 
-describe('config.js integrity checks', () => {
-  it('default CSV file exists', () => {
+describe('config.js整合性チェック', () => {
+  it('デフォルトCSVファイルが存在する', () => {
     const projectRoot = path.resolve('.');
     const csvPath = path.resolve(projectRoot, CONFIG.defaultCSVPath);
     assert.equal(fs.existsSync(csvPath), true, `missing csv at ${csvPath}`);
   });
 
-  it('game progression values are finite positive integers and scoring exists', () => {
+  it('ゲーム進行値が正の有限整数で、スコア設定が存在する', () => {
     assert.equal(Number.isInteger(CONFIG.timeLimit), true, 'CONFIG.timeLimit must be an integer');
     assert.equal(CONFIG.timeLimit > 0, true, 'CONFIG.timeLimit must be positive');
     assert.equal(Number.isInteger(CONFIG.countdownDuration), true, 'CONFIG.countdownDuration must be an integer');
