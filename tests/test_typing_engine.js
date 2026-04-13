@@ -2,8 +2,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { TypingEngine } from '../src/core/typing-engine.js';
 
-describe('TypingEngine', () => {
-  it('loadQuestion sets original and initializes for input', () => {
+describe('TypingEngine（タイピングエンジン）', () => {
+  it('loadQuestionでoriginalを設定し入力状態を初期化', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('さくら', 'さくら');
     assert.equal(engine.original, 'さくら');
@@ -12,14 +12,14 @@ describe('TypingEngine', () => {
     assert.equal(display.typed, '');
   });
 
-  it('handleKeyPress returns correct:true for correct key', () => {
+  it('正解キーでhandleKeyPressがcorrect:trueを返す', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('あ', 'あ');
     const result = engine.handleKeyPress('a');
     assert.equal(result.correct, true);
   });
 
-  it('handleKeyPress returns correct:false for wrong key', () => {
+  it('誤入力でhandleKeyPressがcorrect:falseを返す', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('あ', 'あ');
     const result = engine.handleKeyPress('b');
@@ -27,7 +27,7 @@ describe('TypingEngine', () => {
     assert.equal(result.currentPos, 0);
   });
 
-  it('handleKeyPress advances currentPos on correct key', () => {
+  it('正しいキーでcurrentPosが進む', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('かき', 'かき');
     const r1 = engine.handleKeyPress('k');
@@ -36,14 +36,14 @@ describe('TypingEngine', () => {
     assert.equal(r2.currentPos, 2);
   });
 
-  it('handleKeyPress does not advance on wrong key', () => {
+  it('誤入力ではcurrentPosが進まない', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('か', 'か');
     const result = engine.handleKeyPress('z');
     assert.equal(result.currentPos, 0);
   });
 
-  it('returns completed:true when all characters typed', () => {
+  it('全文字入力時にcompleted:trueが返る', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('あ', 'あ');
     const result = engine.handleKeyPress('a');
@@ -52,14 +52,14 @@ describe('TypingEngine', () => {
     assert.equal(result.totalLen, 1);
   });
 
-  it('returns completed:false when characters remain', () => {
+  it('未入力文字がある場合はcompleted:false', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('かき', 'かき');
     const result = engine.handleKeyPress('k');
     assert.equal(result.completed, false);
   });
 
-  it('handleKeyPress after completion returns correct:false, completed:true', () => {
+  it('完了後はcorrect:falseかつcompleted:trueが返る', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('あ', 'あ');
     engine.handleKeyPress('a');
@@ -68,7 +68,7 @@ describe('TypingEngine', () => {
     assert.equal(result.completed, true);
   });
 
-  it('reset() clears all state', () => {
+  it('resetで全状態がクリアされる', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('さくら', 'さくら');
     engine.handleKeyPress('s');
@@ -80,7 +80,7 @@ describe('TypingEngine', () => {
     assert.equal(display.remaining, '');
   });
 
-  it('getCurrentDisplay returns correct typed/remaining split', () => {
+  it('getCurrentDisplayがtyped/remainingを正しく分割して返す', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('さくら', 'さくら');
     engine.handleKeyPress('s');
@@ -91,7 +91,7 @@ describe('TypingEngine', () => {
     assert.equal(display.remaining, 'kura');
   });
 
-  it('getCurrentDisplay before any input shows all remaining', () => {
+  it('入力前にgetCurrentDisplayが残りだけを示す', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('てすと', 'てすと');
     const display = engine.getCurrentDisplay();
@@ -99,7 +99,7 @@ describe('TypingEngine', () => {
     assert.equal(display.remaining, 'tesuto');
   });
 
-  it('full sequence completes correctly', () => {
+  it('一連入力で正しく完了する', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('き', 'き');
     const r1 = engine.handleKeyPress('k');

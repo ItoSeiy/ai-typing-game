@@ -101,7 +101,7 @@ globalThis.document = {
 
 const { SettingsScreen } = await import('../src/ui/settings-screen.js');
 
-describe('SettingsScreen', () => {
+describe('SettingsScreen（設定画面）', () => {
   beforeEach(() => {
     installTimerMock();
   });
@@ -115,7 +115,7 @@ describe('SettingsScreen', () => {
     globalThis.document = originalDocument;
   });
 
-  it('debounces preview playback while volume slider moves', () => {
+  it('ボリュームスライダー操作中にプレビュー再生をデバウンスする', () => {
     const container = new MockContainer();
     const screen = new SettingsScreen(container);
     const calls = [];
@@ -144,7 +144,7 @@ describe('SettingsScreen', () => {
     assert.deepEqual(calls.at(-1), ['preview']);
   });
 
-  it('does not preview while muted and plays once on unmute', () => {
+  it('ミュート中は再生せず、解除時に1回だけ再生する', () => {
     const container = new MockContainer();
     const screen = new SettingsScreen(container);
     const calls = [];

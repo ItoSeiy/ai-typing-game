@@ -40,12 +40,12 @@ class FakeImage {
 
 FakeImage.reset();
 
-describe('ImagePreloader', () => {
+describe('ImagePreloader（画像プリローダー）', () => {
   beforeEach(() => {
     FakeImage.reset();
   });
 
-  it('preloads valid images and caches the Image object', async () => {
+  it('有効画像を先読みしてImageをキャッシュする', async () => {
     FakeImage.successPaths.add('assets/images/sakura.png');
     const preloader = new ImagePreloader({
       ImageClass: FakeImage,
@@ -62,7 +62,7 @@ describe('ImagePreloader', () => {
     assert.equal(cached?.src, 'assets/images/sakura.png');
   });
 
-  it('skips questions without an image path', async () => {
+  it('画像パス未指定の問題をスキップする', async () => {
     const preloader = new ImagePreloader({
       ImageClass: FakeImage,
       logger: { warn() {} }
@@ -78,7 +78,7 @@ describe('ImagePreloader', () => {
     assert.equal(preloader.get(''), null);
   });
 
-  it('does not throw when an image fails to preload', async () => {
+  it('画像読み込み失敗時でも例外を投げない', async () => {
     FakeImage.failurePaths.add('assets/images/missing.png');
     const preloader = new ImagePreloader({
       ImageClass: FakeImage,
@@ -94,7 +94,7 @@ describe('ImagePreloader', () => {
     assert.equal(preloader.get('assets/images/missing.png'), null);
   });
 
-  it('returns null for unknown paths and the cached object for known paths', async () => {
+  it('不明パスならnull、既知パスならキャッシュを返す', async () => {
     FakeImage.successPaths.add('assets/images/neko.png');
     const preloader = new ImagePreloader({
       ImageClass: FakeImage,

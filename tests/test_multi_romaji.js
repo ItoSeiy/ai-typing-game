@@ -13,7 +13,7 @@ function typeFullSequence(engine, keys) {
   }
 }
 
-describe('Multi-Romaji Patterns', () => {
+describe('複数ローマ字パターン', () => {
   // ── 基本複数パターンテスト ──
 
   it('し: "shi" で正解', () => {
@@ -89,7 +89,7 @@ describe('Multi-Romaji Patterns', () => {
   });
 });
 
-describe('Youon (拗音) Patterns', () => {
+describe('拗音パターン', () => {
   it('しゃ: "sha" で正解', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('しゃ', 'しゃ');
@@ -139,7 +139,7 @@ describe('Youon (拗音) Patterns', () => {
   });
 });
 
-describe('Sokuon (促音) Patterns', () => {
+describe('促音パターン', () => {
   it('っか: "kka" で正解', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('っか', 'っか');
@@ -171,7 +171,7 @@ describe('Sokuon (促音) Patterns', () => {
   });
 });
 
-describe('"ん" Context-Dependent Patterns', () => {
+describe('"ん" 文脈依存パターン', () => {
   it('かんた: "kanta" で正解 (n単打 + 子音)', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('かんた', 'かんた');
@@ -197,7 +197,7 @@ describe('"ん" Context-Dependent Patterns', () => {
   });
 });
 
-describe('Compound Patterns (複合テスト)', () => {
+describe('複合パターンテスト', () => {
   it('しっかり: "sikkari" で正解', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('しっかり', 'しっかり');
@@ -211,7 +211,7 @@ describe('Compound Patterns (複合テスト)', () => {
   });
 });
 
-describe('getCurrentDisplay Tracking', () => {
+describe('getCurrentDisplay追跡', () => {
   it('入力に応じてtyped/remainingが正しく変化する', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('しか', 'しか');
@@ -248,7 +248,7 @@ describe('getCurrentDisplay Tracking', () => {
   });
 });
 
-describe('Mistype Handling', () => {
+describe('誤入力ハンドリング', () => {
   it('不正キー入力で correct: false、位置変わらず', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('か', 'か');

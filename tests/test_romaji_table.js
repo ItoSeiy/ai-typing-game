@@ -2,8 +2,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { ROMAJI_TABLE } from '../src/core/romaji-table.js';
 
-describe('ROMAJI_TABLE', () => {
-  it('is a non-null object', () => {
+describe('ROMAJI_TABLE（ローマ字変換表）', () => {
+  it('非nullのオブジェクトである', () => {
     assert.equal(typeof ROMAJI_TABLE, 'object');
     assert.notEqual(ROMAJI_TABLE, null);
   });
@@ -14,7 +14,7 @@ describe('ROMAJI_TABLE', () => {
     'ま','み','む','め','も','や','ゆ','よ',
     'ら','り','る','れ','ろ','わ','を','ん'];
 
-  it('contains all seion (清音) entries', () => {
+  it('清音の全項目が含まれる', () => {
     for (const kana of seion) {
       assert.ok(ROMAJI_TABLE[kana], `Missing entry for ${kana}`);
       assert.ok(Array.isArray(ROMAJI_TABLE[kana]), `Entry for ${kana} is not an array`);
@@ -22,25 +22,25 @@ describe('ROMAJI_TABLE', () => {
     }
   });
 
-  it('し has multiple input methods (shi/si)', () => {
+  it('「し」に対して複数入力方式（shi/si）がある', () => {
     const entries = ROMAJI_TABLE['し'];
     assert.ok(entries.includes('si'), 'Missing si');
     assert.ok(entries.includes('shi'), 'Missing shi');
   });
 
-  it('ち has multiple input methods (chi/ti)', () => {
+  it('「ち」に対して複数入力方式（chi/ti）がある', () => {
     const entries = ROMAJI_TABLE['ち'];
     assert.ok(entries.includes('ti'), 'Missing ti');
     assert.ok(entries.includes('chi'), 'Missing chi');
   });
 
-  it('つ has multiple input methods (tsu/tu)', () => {
+  it('「つ」に対して複数入力方式（tsu/tu）がある', () => {
     const entries = ROMAJI_TABLE['つ'];
     assert.ok(entries.includes('tu'), 'Missing tu');
     assert.ok(entries.includes('tsu'), 'Missing tsu');
   });
 
-  it('ふ has multiple input methods (fu/hu)', () => {
+  it('「ふ」に対して複数入力方式（fu/hu）がある', () => {
     const entries = ROMAJI_TABLE['ふ'];
     assert.ok(entries.includes('hu'), 'Missing hu');
     assert.ok(entries.includes('fu'), 'Missing fu');
@@ -49,7 +49,7 @@ describe('ROMAJI_TABLE', () => {
   const dakuon = ['が','ぎ','ぐ','げ','ご','ざ','じ','ず','ぜ','ぞ',
     'だ','ぢ','づ','で','ど','ば','び','ぶ','べ','ぼ'];
 
-  it('contains all dakuon (濁音) entries', () => {
+  it('濁音の全項目が含まれる', () => {
     for (const kana of dakuon) {
       assert.ok(ROMAJI_TABLE[kana], `Missing entry for ${kana}`);
     }
@@ -57,7 +57,7 @@ describe('ROMAJI_TABLE', () => {
 
   const handakuon = ['ぱ','ぴ','ぷ','ぺ','ぽ'];
 
-  it('contains all handakuon (半濁音) entries', () => {
+  it('半濁音の全項目が含まれる', () => {
     for (const kana of handakuon) {
       assert.ok(ROMAJI_TABLE[kana], `Missing entry for ${kana}`);
     }
@@ -70,30 +70,30 @@ describe('ROMAJI_TABLE', () => {
     'じゃ','じゅ','じょ','びゃ','びゅ','びょ',
     'ぴゃ','ぴゅ','ぴょ'];
 
-  it('contains all youon (拗音) entries', () => {
+  it('拗音の全項目が含まれる', () => {
     for (const kana of youon) {
       assert.ok(ROMAJI_TABLE[kana], `Missing entry for ${kana}`);
     }
   });
 
-  it('contains sokuon (っ) entry', () => {
+  it('促音（っ）の定義が存在する', () => {
     assert.ok(ROMAJI_TABLE['っ']);
     assert.ok(ROMAJI_TABLE['っ'].includes('xtu'));
   });
 
-  it('contains komoji (小文字) entries', () => {
+  it('小文字かな（ぁ・ぃ等）の項目が含まれる', () => {
     const komoji = ['ぁ','ぃ','ぅ','ぇ','ぉ','ゃ','ゅ','ょ'];
     for (const kana of komoji) {
       assert.ok(ROMAJI_TABLE[kana], `Missing entry for ${kana}`);
     }
   });
 
-  it('contains chouon (ー) entry', () => {
+  it('長音符（ー）の項目が含まれる', () => {
     assert.ok(ROMAJI_TABLE['ー']);
     assert.ok(ROMAJI_TABLE['ー'].includes('-'));
   });
 
-  it('all entries are arrays of non-empty strings', () => {
+  it('全エントリが空でない文字列配列である', () => {
     for (const [kana, entries] of Object.entries(ROMAJI_TABLE)) {
       assert.ok(Array.isArray(entries), `${kana}: not an array`);
       for (const entry of entries) {

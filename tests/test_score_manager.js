@@ -3,57 +3,57 @@ import assert from 'node:assert/strict';
 import { CONFIG } from '../assets/config.js';
 import { ScoreManager } from '../src/core/score-manager.js';
 
-describe('ScoreManager', () => {
-  it('initial score is 0', () => {
+describe('ScoreManager（得点管理）', () => {
+  it('初期スコアが0である', () => {
     const sm = new ScoreManager();
     assert.equal(sm.getScore(), 0);
   });
 
-  it('addCorrect increments correctCount but does not add score', () => {
+  it('addCorrectでcorrectCountが増えるが得点は増えない', () => {
     const sm = new ScoreManager();
     sm.addCorrect();
     assert.equal(sm.getCorrectCount(), 1);
     assert.equal(sm.getScore(), 0);
   });
 
-  it('addCorrect increments correctCount multiple times', () => {
+  it('addCorrectを複数回呼ぶとcorrectCountが増える', () => {
     const sm = new ScoreManager();
     sm.addCorrect();
     sm.addCorrect();
     assert.equal(sm.getCorrectCount(), 2);
   });
 
-  it('addMiss increments missCount', () => {
+  it('addMissでmissCountが増える', () => {
     const sm = new ScoreManager();
     sm.addMiss();
     assert.equal(sm.getMissCount(), 1);
   });
 
-  it('addMiss applies CONFIG.scoring.missPoint', () => {
+  it('addMissがCONFIG.scoring.missPointを適用する', () => {
     const sm = new ScoreManager();
     sm.addMiss();
     assert.equal(sm.getScore(), CONFIG.scoring.missPoint);
   });
 
-  it('addQuestionComplete adds CONFIG.scoring.pointPerChar × kanaLength', () => {
+  it('addQuestionCompleteが文字数×CONFIG.scoring.pointPerCharで加算する', () => {
     const sm = new ScoreManager();
     sm.addQuestionComplete(5);
     assert.equal(sm.getScore(), CONFIG.scoring.pointPerChar * 5);
   });
 
-  it('getAccuracy returns 100 when no keystrokes', () => {
+  it('入力なし時の正確性は100を返す', () => {
     const sm = new ScoreManager();
     assert.equal(sm.getAccuracy(), 100);
   });
 
-  it('getAccuracy calculates correctly with mixed input', () => {
+  it('正誤混在でも正確性が正しく計算される', () => {
     const sm = new ScoreManager();
     sm.addCorrect();
     sm.addMiss();
     assert.equal(sm.getAccuracy(), 50);
   });
 
-  it('getAccuracy with all correct returns 100', () => {
+  it('全て正解なら正確性が100となる', () => {
     const sm = new ScoreManager();
     sm.addCorrect();
     sm.addCorrect();
@@ -61,7 +61,7 @@ describe('ScoreManager', () => {
     assert.equal(sm.getAccuracy(), 100);
   });
 
-  it('getTotalKeystrokes returns correct + miss', () => {
+  it('getTotalKeystrokesがcorrect＋missを返す', () => {
     const sm = new ScoreManager();
     sm.addCorrect();
     sm.addCorrect();
@@ -69,7 +69,7 @@ describe('ScoreManager', () => {
     assert.equal(sm.getTotalKeystrokes(), 3);
   });
 
-  it('reset clears all counters', () => {
+  it('resetで各種カウンタがリセットされる', () => {
     const sm = new ScoreManager();
     sm.addCorrect();
     sm.addCorrect();
@@ -81,7 +81,7 @@ describe('ScoreManager', () => {
     assert.equal(sm.getMissCount(), 0);
   });
 
-  it('score accumulates across question completions', () => {
+  it('問題完了でスコアが蓄積される', () => {
     const sm = new ScoreManager();
     sm.addQuestionComplete(2);
     sm.addQuestionComplete(3);
@@ -89,7 +89,7 @@ describe('ScoreManager', () => {
   });
 });
 
-describe('ScoreManager CONFIG-driven behavior', () => {
+describe('ScoreManager CONFIG駆動挙動', () => {
   const origPointPerChar = CONFIG.scoring.pointPerChar;
   const origMissPoint = CONFIG.scoring.missPoint;
 
@@ -98,7 +98,7 @@ describe('ScoreManager CONFIG-driven behavior', () => {
     CONFIG.scoring.missPoint = origMissPoint;
   });
 
-  it('pointPerChar=30 → 1問完了で文字数比例の加点', () => {
+  it('pointPerChar=30の場合、1問完了の加点は文字数比例になる', () => {
     CONFIG.scoring.pointPerChar = 30;
     const sm = new ScoreManager();
     sm.addQuestionComplete(4);
@@ -117,7 +117,7 @@ describe('ScoreManager CONFIG-driven behavior', () => {
     assert.notEqual(shortSm.getScore(), longSm.getScore());
   });
 
-  it('missPoint=-5 → ミス1回で5点減算', () => {
+  it('ミス1回で5点減る場合の挙動', () => {
     CONFIG.scoring.missPoint = -5;
     const sm = new ScoreManager();
     sm.addMiss();
