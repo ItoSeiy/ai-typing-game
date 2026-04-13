@@ -38,3 +38,83 @@ jobs:
           name: 'Test Report'
           path: test-results.xml
           reporter: java-junit
+      - name: Test Summary
+        if: always()
+        run: |
+          node <<'SCRIPT'
+          const fs = require('fs');
+
+          const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+          const xmlPath = 'test-results.xml';
+
+          const escapeCell = (value) => String(value ?? '')
+            .replace(/\r?\n/g, ' ')
+            .replace(/\|/g, '\\|')
+            .trim() || '-';
+
+          const formatSeconds = (value) => {
+            const n = Number(value);
+            return Number.isFinite(n) ? `${n.toFixed(2)}s` : '-';
+          };
+
+          if (!summaryPath) {
+            process.stdout.write('GITHUB_STEP_SUMMARY is not set.\n');
+            process.exit(0);
+          }
+
+          if (!fs.existsSync(xmlPath)) {
+            fs.appendFileSync(summaryPath, '## Test Results\n\nNo `test-results.xml` file was found.\n');
+            process.exit(0);
+          }
+
+          const xml = fs.readFileSync(xmlPath, 'utf8');
+          const suites = [];
+          const suitePattern = /<testsuite\b([^>]*)>([\s\S]*?)<\/testsuite>/g;
+          let suiteMatch;
+
+          while ((suiteMatch = suitePattern.exec(xml)) !== null) {
+            const suiteAttrs = suiteMatch[1];
+            const suiteBody = suiteMatch[2];
+            const suiteNameMatch = suiteAttrs.match(/name="([^"]*)"/);
+            const suiteName = suiteNameMatch ? suiteNameMatch[1] : 'Unnamed suite';
+            const testcasePattern = /<testcase\b([^>]*)>([\s\S]*?)<\/testcase>|<testcase\b([^>]*)\/>/g;
+            let testcaseMatch;
+
+            while ((testcaseMatch = testcasePattern.exec(suiteBody)) !== null) {
+              const attrs = testcaseMatch[1] || testcaseMatch[3] || '';
+              const body = testcaseMatch[2] || '';
+              const nameMatch = attrs.match(/name="([^"]*)"/);
+              const timeMatch = attrs.match(/time="([^"]*)"/);
+              const failed = /<(failure|error)\b/.test(body);
+
+              suites.push({
+                suite: suiteName,
+                test: nameMatch ? nameMatch[1] : 'Unnamed test',
+                result: failed ? '❌' : '✅',
+                time: formatSeconds(timeMatch ? timeMatch[1] : ''),
+                failed,
+              });
+            }
+          }
+
+          const total = suites.length;
+          const failed = suites.filter((row) => row.failed).length;
+          const passed = total - failed;
+          const totalTime = suites.reduce((sum, row) => {
+            const seconds = Number.parseFloat(String(row.time).replace(/s$/, ''));
+            return Number.isFinite(seconds) ? sum + seconds : sum;
+          }, 0);
+
+          const lines = [
+            '## Test Results',
+            '',
+            '| Suite | Test | Result | Time |',
+            '|-------|------|--------|------|',
+            ...suites.map((row) => `| ${escapeCell(row.suite)} | ${escapeCell(row.test)} | ${row.result} | ${row.time} |`),
+            '',
+            `**Summary**: ${passed} passed, ${failed} failed (total: ${formatSeconds(totalTime)})`,
+            '',
+          ];
+
+          fs.appendFileSync(summaryPath, lines.join('\n'));
+          SCRIPT
