@@ -53,7 +53,7 @@ function canConvertKanaToRomaji(kana) {
   return true;
 }
 
-describe('CSV integrity checks', () => {
+describe('CSV整合性チェック', () => {
   const projectRoot = path.resolve('.');
   const csvPath = path.resolve(projectRoot, CONFIG.defaultCSVPath);
   const csvText = fs.readFileSync(csvPath, 'utf8');
@@ -61,7 +61,7 @@ describe('CSV integrity checks', () => {
   const headerLine = csvText.replace(/^\uFEFF/, '').split(/\r?\n/, 1)[0];
   const headers = headerLine.split(',');
 
-  it('default CSV parses to at least one question and LevelLoader returns questions', async () => {
+  it('デフォルトCSVを読み取り、少なくとも1問以上取得できる', async () => {
     assert.equal(csvRows.length > 0, true, 'parseCSV(default CSV) returned no rows');
 
     const originalFetch = globalThis.fetch;
@@ -83,7 +83,7 @@ describe('CSV integrity checks', () => {
     }
   });
 
-  it('CSV header is exact, unique, and whitespace-free', () => {
+  it('CSVヘッダが正確で重複や空白がない', () => {
     assert.deepEqual(headers, ['id', 'text_display', 'text_kana', 'image_path']);
     assert.equal(new Set(headers).size, headers.length, 'duplicate CSV headers detected');
     for (const [index, header] of headers.entries()) {
@@ -91,7 +91,7 @@ describe('CSV integrity checks', () => {
     }
   });
 
-  it('row ids are finite positive integers', () => {
+  it('各行IDが正の有限整数である', () => {
     for (const [index, row] of csvRows.entries()) {
       assert.equal(
         Number.isInteger(Number(row.id)) && Number(row.id) > 0,
@@ -101,7 +101,7 @@ describe('CSV integrity checks', () => {
     }
   });
 
-  it('image files referenced by rows exist when provided', () => {
+  it('参照画像ファイルが存在する', () => {
     for (const [index, row] of csvRows.entries()) {
       const imagePath = (row.image_path ?? '').trim();
 
@@ -134,7 +134,7 @@ describe('CSV integrity checks', () => {
     }
   });
 
-  it('all kana text fields are convertible via ROMAJI_TABLE', () => {
+  it('ROMAJI_TABLEで全てのかなが変換可能', () => {
     for (const [index, row] of csvRows.entries()) {
       assert.equal(typeof row.text_kana, 'string');
       assert.equal(
@@ -145,7 +145,7 @@ describe('CSV integrity checks', () => {
     }
   });
 
-  it('required fields are present and non-empty where required', () => {
+  it('必須フィールドが存在し空文字でない', () => {
     for (const [index, row] of csvRows.entries()) {
       assert.equal(Object.hasOwn(row, 'id'), true, `row=${index + 1} is missing id`);
       assert.equal(Object.hasOwn(row, 'text_display'), true, `row=${index + 1}, id=${row.id} is missing text_display`);
@@ -164,7 +164,7 @@ describe('CSV integrity checks', () => {
     }
   });
 
-  it('IDs are unique within CSV', () => {
+  it('CSV内のIDが一意である', () => {
     const ids = csvRows.map((row) => row.id);
     const uniq = new Set(ids);
     assert.equal(uniq.size, ids.length);

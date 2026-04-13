@@ -2,20 +2,20 @@ import { describe, it, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { GameLoop } from '../src/core/game-loop.js';
 
-describe('GameLoop', () => {
-  it('constructor sets timeLimit and remaining', () => {
+describe('GameLoop（ゲームループ）', () => {
+  it('コンストラクタでtimeLimitとremainingを設定する', () => {
     const gl = new GameLoop(60);
     assert.equal(gl.timeLimit, 60);
     assert.equal(gl.remaining, 60);
     assert.equal(gl.running, false);
   });
 
-  it('getRemainingTime returns remaining seconds', () => {
+  it('getRemainingTimeが残り秒数を返す', () => {
     const gl = new GameLoop(30);
     assert.equal(gl.getRemainingTime(), 30);
   });
 
-  it('start calls onTick immediately with timeLimit', () => {
+  it('start時にonTickをtimeLimitで即時実行する', () => {
     const gl = new GameLoop(10);
     const ticks = [];
     gl.start((t) => ticks.push(t), () => {});
@@ -23,14 +23,14 @@ describe('GameLoop', () => {
     gl.stop();
   });
 
-  it('start sets running to true', () => {
+  it('startでrunningがtrueになる', () => {
     const gl = new GameLoop(10);
     gl.start(() => {}, () => {});
     assert.equal(gl.running, true);
     gl.stop();
   });
 
-  it('start does nothing if already running', () => {
+  it('startは既に実行中なら何もしない', () => {
     const gl = new GameLoop(10);
     let callCount = 0;
     gl.start(() => callCount++, () => {});
@@ -40,7 +40,7 @@ describe('GameLoop', () => {
     gl.stop();
   });
 
-  it('stop clears the timer and sets running to false', () => {
+  it('stopでタイマーを停止しrunningをfalseにする', () => {
     const gl = new GameLoop(10);
     gl.start(() => {}, () => {});
     gl.stop();
@@ -48,13 +48,13 @@ describe('GameLoop', () => {
     assert.equal(gl.timerId, null);
   });
 
-  it('stop is safe to call when not running', () => {
+  it('未実行時でもstopが安全に呼べる', () => {
     const gl = new GameLoop(10);
     gl.stop();
     assert.equal(gl.running, false);
   });
 
-  it('timer decrements remaining each second', async () => {
+  it('タイマーが1秒ごとに残り秒数を減らす', async () => {
     const gl = new GameLoop(3);
     const ticks = [];
     await new Promise((resolve) => {
@@ -68,7 +68,7 @@ describe('GameLoop', () => {
     assert.equal(gl.running, false);
   });
 
-  it('pause stops the timer interval', () => {
+  it('pauseでタイマーの進行を停止する', () => {
     const gl = new GameLoop(10);
     gl.start(() => {}, () => {});
     assert.equal(gl.running, true);
@@ -81,7 +81,7 @@ describe('GameLoop', () => {
     gl.stop();
   });
 
-  it('resume restarts the timer interval after pause', () => {
+  it('pause後にresumeでタイマーが再開する', () => {
     const gl = new GameLoop(10);
     gl.start(() => {}, () => {});
     gl.pause();
@@ -93,14 +93,14 @@ describe('GameLoop', () => {
     gl.stop();
   });
 
-  it('pause does nothing if not running', () => {
+  it('未実行時はpauseが無視される', () => {
     const gl = new GameLoop(10);
     gl.pause();
     assert.equal(gl.paused, false);
     assert.equal(gl.running, false);
   });
 
-  it('pause does nothing if already paused', () => {
+  it('pause中は再度pauseしても変化しない', () => {
     const gl = new GameLoop(10);
     gl.start(() => {}, () => {});
     gl.pause();
@@ -109,7 +109,7 @@ describe('GameLoop', () => {
     gl.stop();
   });
 
-  it('resume does nothing if not paused', () => {
+  it('未pause状態でresumeしても変化しない', () => {
     const gl = new GameLoop(10);
     gl.start(() => {}, () => {});
     gl.resume(); // not paused, should be no-op
@@ -117,7 +117,7 @@ describe('GameLoop', () => {
     gl.stop();
   });
 
-  it('stop resets paused state', () => {
+  it('stopでpause状態が解除される', () => {
     const gl = new GameLoop(10);
     gl.start(() => {}, () => {});
     gl.pause();
@@ -126,7 +126,7 @@ describe('GameLoop', () => {
     assert.equal(gl.running, false);
   });
 
-  it('pause preserves remaining time during pause', async () => {
+  it('pause中も残り時間が維持される', async () => {
     const gl = new GameLoop(5);
     const ticks = [];
 

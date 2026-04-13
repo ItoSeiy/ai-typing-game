@@ -27,17 +27,216 @@ jobs:
           node-version: '20'
       - run: npm ci
       - run: node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=test-results.xml tests/test_*.js
-      - uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: test-results.xml
-          comment_mode: always
       - uses: dorny/test-reporter@v1
         if: always()
         with:
           name: 'Test Report'
           path: test-results.xml
           reporter: java-junit
+      - name: PR Test Comment
+        if: always() && github.event_name != 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.event.issue.number }}
+        run: |
+          node <<'SCRIPT'
+          const fs = require('fs');
+          const path = require('path');
+          const { execFileSync } = require('child_process');
+
+          const xmlPath = 'test-results.xml';
+          const prNumber = process.env.PR_NUMBER;
+
+          const escapeCell = (value) => String(value ?? '')
+            .replace(/\r?\n/g, ' ')
+            .replace(/\|/g, '\\|')
+            .trim() || '-';
+
+          const formatDuration = (seconds) => {
+            const totalSeconds = Number(seconds);
+            if (!Number.isFinite(totalSeconds) || totalSeconds < 0) {
+              return '-';
+            }
+
+            if (totalSeconds >= 60) {
+              const minutes = Math.floor(totalSeconds / 60);
+              const rest = totalSeconds - (minutes * 60);
+              return `${minutes}分${rest.toFixed(rest < 10 ? 2 : 0)}秒`;
+            }
+
+            if (totalSeconds >= 1) {
+              return `${totalSeconds.toFixed(2)}秒`;
+            }
+
+            return `${Math.round(totalSeconds * 1000)}ms`;
+          };
+
+          const parseAttributes = (attrText) => {
+            const attrs = {};
+            const attrPattern = /([A-Za-z_:][-A-Za-z0-9_:.]*)="([^"]*)"/g;
+            let match;
+            while ((match = attrPattern.exec(attrText)) !== null) {
+              attrs[match[1]] = match[2];
+            }
+            return attrs;
+          };
+
+          const suitePattern = /<testsuite\b([^>]*)>([\s\S]*?)<\/testsuite>/g;
+          const testcasePattern = /<testcase\b([^>]*)>([\s\S]*?)<\/testcase>|<testcase\b([^>]*)\/>/g;
+          const suites = [];
+
+          if (!prNumber) {
+            console.log('PR_NUMBER が未設定のため、PRコメント投稿をスキップした。');
+            process.exit(0);
+          }
+
+          if (!fs.existsSync(xmlPath)) {
+            const fallbackBody = [
+              '## テスト結果 ⚠️ test-results.xml が見つかりません',
+              '',
+              'テスト結果ファイルが見つからなかったため、詳細を生成できませんでした。',
+            ].join('\n');
+
+            const bodyFile = path.join(process.env.RUNNER_TEMP || '.', 'pr-test-comment.md');
+            fs.writeFileSync(bodyFile, fallbackBody, 'utf8');
+            try {
+              execFileSync('gh', ['pr', 'comment', prNumber, '--body-file', bodyFile], {
+                stdio: 'inherit',
+                env: process.env,
+              });
+            } catch (error) {
+              console.error(`PRコメント投稿に失敗したが、workflow は継続する: ${error.message}`);
+            }
+            process.exit(0);
+          }
+
+          const xml = fs.readFileSync(xmlPath, 'utf8');
+          let suiteMatch;
+
+          while ((suiteMatch = suitePattern.exec(xml)) !== null) {
+            const suiteAttrs = parseAttributes(suiteMatch[1]);
+            const suiteBody = suiteMatch[2];
+            const suiteName = suiteAttrs.name || 'Unnamed suite';
+            const suiteEntries = [];
+            let testcaseMatch;
+            testcasePattern.lastIndex = 0;
+
+            while ((testcaseMatch = testcasePattern.exec(suiteBody)) !== null) {
+              const attrs = parseAttributes(testcaseMatch[1] || testcaseMatch[3] || '');
+              const body = testcaseMatch[2] || '';
+              const name = attrs.name || 'Unnamed test';
+              const time = Number(attrs.time || suiteAttrs.time || 0);
+              const failed = /<(failure|error)\b/.test(body);
+              const skipped = /<skipped\b/.test(body);
+
+              suiteEntries.push({
+                name,
+                time,
+                failed,
+                skipped,
+              });
+            }
+
+            if (suiteEntries.length > 0) {
+              suites.push({
+                name: suiteName,
+                entries: suiteEntries,
+                tests: Number(suiteAttrs.tests || suiteEntries.length),
+                failures: Number(suiteAttrs.failures || suiteEntries.filter((entry) => entry.failed).length),
+                skipped: Number(suiteAttrs.skipped || suiteEntries.filter((entry) => entry.skipped).length),
+                time: Number(suiteAttrs.time || suiteEntries.reduce((sum, entry) => sum + (Number.isFinite(entry.time) ? entry.time : 0), 0)),
+              });
+            }
+          }
+
+          const flatTests = suites.flatMap((suite) => suite.entries.map((entry) => ({
+            suite: suite.name,
+            name: entry.name,
+            time: entry.time,
+            failed: entry.failed,
+            skipped: entry.skipped,
+          })));
+
+          if (flatTests.length === 0) {
+            const fallbackBody = [
+              '## テスト結果 ⚠️ テストケースを読み取れませんでした',
+              '',
+              'test-results.xml は存在しましたが、テストケースを抽出できませんでした。',
+            ].join('\n');
+
+            const bodyFile = path.join(process.env.RUNNER_TEMP || '.', 'pr-test-comment.md');
+            fs.writeFileSync(bodyFile, fallbackBody, 'utf8');
+            try {
+              execFileSync('gh', ['pr', 'comment', prNumber, '--body-file', bodyFile], {
+                stdio: 'inherit',
+                env: process.env,
+              });
+            } catch (error) {
+              console.error(`PRコメント投稿に失敗したが、workflow は継続する: ${error.message}`);
+            }
+            process.exit(0);
+          }
+
+          const total = flatTests.length;
+          const failed = flatTests.filter((entry) => entry.failed).length;
+          const skipped = flatTests.filter((entry) => entry.skipped).length;
+          const passed = total - failed - skipped;
+          const totalTime = flatTests.reduce((sum, entry) => sum + (Number.isFinite(entry.time) ? entry.time : 0), 0);
+          const hasFailures = failed > 0;
+
+          const lines = [
+            hasFailures ? '## テスト結果 ❌ 失敗あり' : '## テスト結果 ✅ 全件PASS',
+            '',
+            '| 項目 | 結果 |',
+            '|------|------|',
+            `| テスト合計 | ${total}件 |`,
+            `| 成功 | ${passed} ✅ |`,
+            `| 失敗 | ${failed} |`,
+            `| スキップ | ${skipped} |`,
+            `| 実行時間 | ${formatDuration(totalTime)} |`,
+            '',
+          ];
+
+          if (hasFailures) {
+            lines.push('❌ **失敗テスト:**');
+            flatTests
+              .filter((entry) => entry.failed)
+              .forEach((entry) => {
+                lines.push(`- ${escapeCell(entry.suite)} > ${escapeCell(entry.name)}`);
+              });
+            lines.push('');
+          }
+
+          lines.push(`<details><summary>📋 スイート別詳細（${suites.length}スイート）</summary>`);
+          lines.push('');
+          lines.push('| スイート | テスト数 | 結果 | 時間 |');
+          lines.push('|---------|---------|------|------|');
+          suites.forEach((suite) => {
+            const failedCount = suite.entries.filter((entry) => entry.failed).length;
+            const skippedCount = suite.entries.filter((entry) => entry.skipped).length;
+            const passedCount = suite.entries.length - failedCount - skippedCount;
+            const result = failedCount > 0 ? '❌ 一部失敗' : '✅ 全PASS';
+            const displayCount = `${suite.entries.length}`;
+            const countSuffix = skippedCount > 0 ? ` / スキップ ${skippedCount}` : '';
+            const passSuffix = failedCount > 0 ? ` / 成功 ${passedCount}` : '';
+            lines.push(`| ${escapeCell(suite.name)} | ${displayCount}${countSuffix}${passSuffix} | ${result} | ${formatDuration(suite.time)} |`);
+          });
+          lines.push('');
+          lines.push('</details>');
+          lines.push('');
+
+          const bodyFile = path.join(process.env.RUNNER_TEMP || '.', 'pr-test-comment.md');
+          fs.writeFileSync(bodyFile, lines.join('\n'), 'utf8');
+
+          try {
+            execFileSync('gh', ['pr', 'comment', prNumber, '--body-file', bodyFile], {
+              stdio: 'inherit',
+              env: process.env,
+            });
+          } catch (error) {
+            console.error(`PRコメント投稿に失敗したが、workflow は継続する: ${error.message}`);
+          }
+          SCRIPT
       - name: Test Summary
         if: always()
         run: |

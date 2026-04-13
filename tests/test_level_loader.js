@@ -12,8 +12,8 @@ globalThis.fetch = async (url) => ({
 
 const { LevelLoader, shuffleQuestions } = await import('../src/loader/level-loader.js');
 
-describe('LevelLoader', () => {
-  it('loadLevel returns parsed questions with camelCase keys', async () => {
+describe('LevelLoader（レベル読込）', () => {
+  it('loadLevelがcamelCaseキー付き質問配列を返す', async () => {
     const loader = new LevelLoader();
     const questions = await loader.loadLevel('assets/levels/test.csv');
     assert.equal(questions.length, 2);
@@ -24,13 +24,13 @@ describe('LevelLoader', () => {
     assert.deepEqual(Object.keys(questions[0]), ['id', 'textDisplay', 'textKana', 'imagePath']);
   });
 
-  it('loadLevel converts numeric fields to numbers', async () => {
+  it('loadLevelが数値項目を数値型へ変換する', async () => {
     const loader = new LevelLoader();
     const questions = await loader.loadLevel('assets/levels/test.csv');
     assert.equal(typeof questions[0].id, 'number');
   });
 
-  it('loadLevel throws on HTTP error', async () => {
+  it('HTTPエラー時にloadLevelが例外を投げる', async () => {
     const originalFetch = globalThis.fetch;
     globalThis.fetch = async () => ({ ok: false, status: 404 });
     const loader = new LevelLoader();
@@ -41,7 +41,7 @@ describe('LevelLoader', () => {
     globalThis.fetch = originalFetch;
   });
 
-  it('loadLevel fills missing optional fields with empty string', async () => {
+  it('任意項目の欠損を空文字で補完する', async () => {
     const originalFetch = globalThis.fetch;
     globalThis.fetch = async () => ({
       ok: true,
@@ -54,27 +54,27 @@ describe('LevelLoader', () => {
   });
 });
 
-describe('shuffleQuestions', () => {
-  it('returns an array of the same length', () => {
+describe('shuffleQuestions（シャッフル）', () => {
+  it('同じ長さの配列を返す', () => {
     const input = [1, 2, 3, 4, 5];
     const result = shuffleQuestions(input);
     assert.equal(result.length, input.length);
   });
 
-  it('does not modify the original array', () => {
+  it('元配列を破壊しない', () => {
     const input = [1, 2, 3, 4, 5];
     const copy = [...input];
     shuffleQuestions(input);
     assert.deepEqual(input, copy);
   });
 
-  it('contains all original elements', () => {
+  it('元要素をすべて含む', () => {
     const input = [1, 2, 3, 4, 5];
     const result = shuffleQuestions(input);
     assert.deepEqual(result.sort(), [...input].sort());
   });
 
-  it('instance method delegates to module function', () => {
+  it('インスタンスメソッドがモジュール関数を委譲実行する', () => {
     const loader = new LevelLoader();
     const input = [1, 2, 3];
     const result = loader.shuffleQuestions(input);

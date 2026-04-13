@@ -39,24 +39,24 @@ globalThis.AudioContext = MockAudioContext;
 
 const { AudioManager } = await import('../src/audio/audio-manager.js');
 
-describe('AudioManager', () => {
+describe('AudioManager（音声管理）', () => {
   beforeEach(() => {
     storage.clear();
   });
 
-  it('constructor sets default volume and muted state', () => {
+  it('コンストラクタでデフォルト音量とミュート状態が設定される', () => {
     const am = new AudioManager();
     assert.equal(am.getVolume(), 0.5);
     assert.equal(am.isMuted(), false);
   });
 
-  it('setVolume changes volume', () => {
+  it('setVolumeで音量が変更される', () => {
     const am = new AudioManager();
     am.setVolume(0.8);
     assert.equal(am.getVolume(), 0.8);
   });
 
-  it('setVolume clamps to 0-1 range', () => {
+  it('setVolumeが0〜1の範囲に収まる', () => {
     const am = new AudioManager();
     am.setVolume(-0.5);
     assert.equal(am.getVolume(), 0);
@@ -64,7 +64,7 @@ describe('AudioManager', () => {
     assert.equal(am.getVolume(), 1);
   });
 
-  it('setMute toggles muted state', () => {
+  it('setMuteがミュート状態を切り替える', () => {
     const am = new AudioManager();
     am.setMute(true);
     assert.equal(am.isMuted(), true);
@@ -72,14 +72,14 @@ describe('AudioManager', () => {
     assert.equal(am.isMuted(), false);
   });
 
-  it('init creates AudioContext', () => {
+  it('initでAudioContextが作成される', () => {
     const am = new AudioManager();
     assert.equal(am._ctx, null);
     am.init();
     assert.notEqual(am._ctx, null);
   });
 
-  it('init is idempotent (second call does nothing)', () => {
+  it('initが二度呼び出しても初回だけ実行される', () => {
     const am = new AudioManager();
     am.init();
     const ctx = am._ctx;
@@ -87,7 +87,7 @@ describe('AudioManager', () => {
     assert.equal(am._ctx, ctx);
   });
 
-  it('saveSettings persists volume and mute', () => {
+  it('saveSettingsで音量とミュートを永続化する', () => {
     const am = new AudioManager();
     am.setVolume(0.7);
     am.setMute(true);
@@ -96,7 +96,7 @@ describe('AudioManager', () => {
     assert.equal(storage.get('matrixTyper_seMute'), 'true');
   });
 
-  it('loadSettings restores volume and mute', () => {
+  it('loadSettingsで音量とミュートが復元される', () => {
     storage.set('matrixTyper_seVolume', '0.3');
     storage.set('matrixTyper_seMute', 'true');
     const am = new AudioManager();
@@ -105,20 +105,20 @@ describe('AudioManager', () => {
     assert.equal(am.isMuted(), true);
   });
 
-  it('loadSettings clamps restored volume to 0-1', () => {
+  it('loadSettingsで復元音量を0〜1に正規化する', () => {
     storage.set('matrixTyper_seVolume', '5');
     const am = new AudioManager();
     am.loadSettings();
     assert.equal(am.getVolume(), 1);
   });
 
-  it('playSE does nothing when not initialized', () => {
+  it('初期化前の状態でplaySEを呼び出しても例外が出ない', () => {
     const am = new AudioManager();
     // Should not throw
     am.playSE('type');
   });
 
-  it('playSE does nothing when muted', () => {
+  it('ミュート時はplaySEが無効化される', () => {
     const am = new AudioManager();
     am.init();
     am.setMute(true);
