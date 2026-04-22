@@ -102,6 +102,8 @@ describe('CSV整合性チェック', () => {
   });
 
   it('参照画像ファイルが存在する', () => {
+    const allowedImageExts = new Set(['.png', '.jpg', '.jpeg']);
+
     for (const [index, row] of csvRows.entries()) {
       const imagePath = (row.image_path ?? '').trim();
 
@@ -120,9 +122,9 @@ describe('CSV整合性チェック', () => {
         `row=${index + 1}, id=${row.id} has image_path outside assets/images: ${imagePath}`
       );
       assert.equal(
-        imagePath.endsWith('.png'),
+        allowedImageExts.has(path.extname(imagePath).toLowerCase()),
         true,
-        `row=${index + 1}, id=${row.id} has non-png image_path: ${imagePath}`
+        `row=${index + 1}, id=${row.id} has unsupported image_path extension: ${imagePath}`
       );
 
       const resolved = path.resolve(projectRoot, imagePath);
