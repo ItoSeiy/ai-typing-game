@@ -7,6 +7,7 @@ import { InputHandler } from './core/input-handler.js';
 // ─── Data modules ───
 import { CONFIG } from '../assets/config.js';
 import { LevelLoader } from './loader/level-loader.js';
+import { DifficultyLoader } from './loader/difficulty-loader.js';
 import { ImagePreloader } from './core/image-preloader.js';
 
 // ─── Audio modules ───
@@ -15,6 +16,7 @@ import { AudioManager } from './audio/audio-manager.js';
 // ─── UI modules ───
 import { MatrixRain } from './ui/matrix-rain.js';
 import { TitleScreen } from './ui/title-screen.js';
+import { DifficultyScreen } from './ui/difficulty-screen.js';
 import { GameScreen } from './ui/game-screen.js';
 import { ResultScreen } from './ui/result-screen.js';
 import { SettingsScreen } from './ui/settings-screen.js';
@@ -23,6 +25,7 @@ import { GameMenu } from './ui/game-menu.js';
 // ─── Game State ───
 const State = {
   TITLE: 'title',
+  DIFFICULTY: 'difficulty',
   COUNTDOWN: 'countdown',
   PLAYING: 'playing',
   RESULT: 'result',
@@ -31,6 +34,8 @@ const State = {
 
 let currentState = State.TITLE;
 let questions = [];
+let difficulties = [];
+let selectedDifficulty = null;
 let currentQuestionIndex = 0;
 let audioInitialized = false;
 
@@ -40,6 +45,7 @@ const typingEngine = new TypingEngine();
 const scoreManager = new ScoreManager();
 const inputHandler = new InputHandler();
 const levelLoader = new LevelLoader();
+const difficultyLoader = new DifficultyLoader();
 const imagePreloader = new ImagePreloader();
 const audioManager = new AudioManager();
 
@@ -48,6 +54,7 @@ const canvas = document.getElementById('matrix-canvas');
 const matrixRain = new MatrixRain(canvas);
 
 const titleScreen = new TitleScreen(document.getElementById('title-screen'));
+const difficultyScreen = new DifficultyScreen(document.getElementById('difficulty-screen'));
 const gameScreen = new GameScreen(document.getElementById('game-screen'));
 const resultScreen = new ResultScreen(document.getElementById('result-screen'));
 const settingsScreen = new SettingsScreen(document.getElementById('settings-screen'));
@@ -58,6 +65,14 @@ gameScreen.setImagePreloader(imagePreloader);
 settingsScreen.setAudioManager(audioManager);
 gameMenu.setAudioManager(audioManager);
 gameMenu.attach(document.getElementById('game-screen'));
+
+const difficultyLoadPromise = difficultyLoader.loadDifficulties().then((loaded) => {
+  difficulties = loaded;
+  if (!selectedDifficulty && difficulties.length > 0) {
+    selectedDifficulty = difficulties[0];
+  }
+  return difficulties;
+});
 
 // ─── Matrix Rain ───
 function resizeCanvas() {
@@ -70,6 +85,7 @@ matrixRain.start();
 // ─── Screen Management ───
 function hideAllScreens() {
   titleScreen.hide();
+  difficultyScreen.hide();
   gameScreen.hide();
   resultScreen.hide();
   settingsScreen.hide();
@@ -82,6 +98,15 @@ function showTitle() {
   titleScreen.show(onStartClicked);
 }
 
+function showDifficulty() {
+  currentState = State.DIFFICULTY;
+  hideAllScreens();
+  difficultyScreen.show(difficulties, async (difficulty) => {
+    selectedDifficulty = difficulty;
+    await startGameForDifficulty(difficulty);
+  });
+}
+
 // ─── Audio Init (user gesture required) ───
 function ensureAudioInit() {
   if (!audioInitialized) {
@@ -91,10 +116,17 @@ function ensureAudioInit() {
 }
 
 // ─── Load Questions ───
-async function loadQuestions() {
+async function loadQuestions(csvPath = CONFIG.defaultCSVPath) {
   try {
-    const rawQuestions = await levelLoader.loadLevel(CONFIG.defaultCSVPath);
-    questions = rawQuestions.map(q => ({
+    const rawQuestions = await levelLoader.loadLevel(csvPath);
+    const sourceQuestions = rawQuestions.length > 0
+      ? rawQuestions
+      : [
+          { textDisplay: 'さくら', textKana: 'さくら', imagePath: '' },
+          { textDisplay: 'にほん', textKana: 'にほん', imagePath: '' },
+          { textDisplay: 'たいぴんぐ', textKana: 'たいぴんぐ', imagePath: '' }
+        ];
+    questions = sourceQuestions.map(q => ({
       display: q.textDisplay,
       kana: q.textKana,
       imagePath: q.imagePath || ''
@@ -231,9 +263,17 @@ function endGame() {
 
 // ─── Button Callbacks ───
 async function onStartClicked() {
-  if (questions.length === 0) {
-    await loadQuestions();
-  }
+  await difficultyLoadPromise;
+  showDifficulty();
+}
+
+function getSelectedCSVPath() {
+  return selectedDifficulty?.csv || CONFIG.defaultCSVPath;
+}
+
+async function startGameForDifficulty(difficulty) {
+  difficultyScreen.hide();
+  await loadQuestions(difficulty?.csv || CONFIG.defaultCSVPath);
   startCountdown();
 }
 
@@ -245,9 +285,7 @@ titleScreen.onSettings(() => {
 });
 
 resultScreen.onRestart(async () => {
-  if (questions.length === 0) {
-    await loadQuestions();
-  }
+  await loadQuestions(getSelectedCSVPath());
   startCountdown();
 });
 
@@ -257,6 +295,10 @@ resultScreen.onTitle(() => {
 
 settingsScreen.onBack(() => {
   audioManager.saveSettings();
+  showTitle();
+});
+
+difficultyScreen.onBack(() => {
   showTitle();
 });
 
@@ -277,9 +319,7 @@ gameMenu.onRestart(async () => {
   gameLoop.stop();
   inputHandler.disable();
   inputHandler.destroy();
-  if (questions.length === 0) {
-    await loadQuestions();
-  }
+  await loadQuestions(getSelectedCSVPath());
   startCountdown();
 });
 
@@ -292,4 +332,3 @@ gameMenu.onBackToTitle(() => {
 
 // ─── Init ───
 showTitle();
-loadQuestions();

@@ -435,6 +435,86 @@ input[type="checkbox"] {
     0 0 20px #00ff41;
 }
 
+/* ─── Difficulty Screen (BEM) ─── */
+.difficulty-screen {
+  justify-content: flex-start;
+  padding-top: 6vh;
+  gap: 1rem;
+}
+
+.difficulty-screen .screen__title {
+  font-size: 3.5rem;
+}
+
+.difficulty-screen__subtitle {
+  font-size: 1.05rem;
+  color: #00cc33;
+  letter-spacing: 0.12em;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.difficulty-screen__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  width: min(100%, 980px);
+  align-items: stretch;
+}
+
+.difficulty-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 180px;
+  padding: 1.25rem 1.15rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 255, 65, 0.25);
+  background: rgba(0, 0, 0, 0.72);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.difficulty-card:hover,
+.difficulty-card:focus-visible,
+.difficulty-card.focused {
+  transform: translateY(-2px);
+  border-color: #00ff41;
+  box-shadow:
+    0 0 16px rgba(0, 255, 65, 0.25),
+    inset 0 0 14px rgba(0, 255, 65, 0.06);
+  outline: none;
+}
+
+.difficulty-card__id {
+  font-size: 0.82rem;
+  letter-spacing: 0.22em;
+  opacity: 0.75;
+}
+
+.difficulty-card__label {
+  font-size: 1.55rem;
+  line-height: 1.2;
+}
+
+.difficulty-card__description {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #b4f3bd;
+}
+
+.difficulty-screen__footer {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: #5a9a5a;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
 .game-screen__score {
   font-size: 2rem;
   font-weight: bold;
