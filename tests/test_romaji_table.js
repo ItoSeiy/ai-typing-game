@@ -93,6 +93,33 @@ describe('ROMAJI_TABLE（ローマ字変換表）', () => {
     assert.ok(ROMAJI_TABLE['ー'].includes('-'));
   });
 
+  it('記号・空白・数字の項目が含まれる', () => {
+    const cases = {
+      '！': '!',
+      '？': '?',
+      '、': ',',
+      '。': '.',
+      '・': '/',
+      '　': ' ',
+      ' ': ' ',
+      '０': '0',
+      '１': '1',
+      '２': '2',
+      '３': '3',
+      '４': '4',
+      '５': '5',
+      '６': '6',
+      '７': '7',
+      '８': '8',
+      '９': '9'
+    };
+
+    for (const [kana, romaji] of Object.entries(cases)) {
+      assert.ok(ROMAJI_TABLE[kana], `Missing entry for ${kana}`);
+      assert.ok(ROMAJI_TABLE[kana].includes(romaji), `Missing ${romaji} for ${kana}`);
+    }
+  });
+
   it('全エントリが空でない文字列配列である', () => {
     for (const [kana, entries] of Object.entries(ROMAJI_TABLE)) {
       assert.ok(Array.isArray(entries), `${kana}: not an array`);
