@@ -1,0 +1,20 @@
+[
+  {
+    "id": "normal",
+    "label": "ふつう",
+    "description": "タイピング入門。ひらがな・カタカナ中心、日常語彙で気軽に。",
+    "csv": "assets/levels/normal.csv"
+  },
+  {
+    "id": "hard",
+    "label": "むずかしい",
+    "description": "漢字混じりの語句・中〜長めの熟語。タイピング慣れ向け。",
+    "csv": "assets/levels/hard.csv"
+  },
+  {
+    "id": "very_hard",
+    "label": "ベリーハード",
+    "description": "超長文・早口言葉・英単語混じり・記号あり。ガチ勢向け。",
+    "csv": "assets/levels/very_hard.csv"
+  }
+]
