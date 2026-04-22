@@ -7,7 +7,8 @@ import { parseCSV } from '../src/loader/csv-parser.js';
 import { LevelLoader } from '../src/loader/level-loader.js';
 import { ROMAJI_TABLE } from '../src/core/romaji-table.js';
 
-function canConvertKanaToRomaji(kana) {
+function canConvertKanaToRomaji(rawKana) {
+  const kana = rawKana.replace(/[A-Z]/g, (ch) => ch.toLowerCase());
   let i = 0;
 
   while (i < kana.length) {
@@ -145,6 +146,10 @@ describe('CSV整合性チェック', () => {
         `row=${index + 1}, id=${row.id} is not convertible: ${row.text_kana}`
       );
     }
+  });
+
+  it('英字大文字混在のtext_kanaも変換可能', () => {
+    assert.equal(canConvertKanaToRomaji('Thug Life かわなべ'), true);
   });
 
   it('必須フィールドが存在し空文字でない', () => {
