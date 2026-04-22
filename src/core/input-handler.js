@@ -8,7 +8,11 @@ export class InputHandler {
   _handleKeyDown(event) {
     if (!this.enabled || !this.callback) return;
     event.preventDefault();
-    this.callback(event.key);
+    const key =
+      event.key.length === 1 && /[A-Za-z]/.test(event.key)
+        ? event.key.toLowerCase()
+        : event.key;
+    this.callback(key);
   }
 
   onKeyDown(callback) {

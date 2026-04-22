@@ -33,7 +33,9 @@ export class TypingEngine {
    */
   loadQuestion(textDisplay, textKana) {
     this.original = textDisplay;
-    const normalized = katakanaToHiragana(textKana);
+    const normalized = katakanaToHiragana(textKana).replace(/[A-Z]/g, ch =>
+      ch.toLowerCase()
+    );
     this.chunks = this._parseText(normalized);
     this.currentChunkIndex = 0;
     this.buffer = '';

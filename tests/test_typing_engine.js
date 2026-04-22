@@ -110,6 +110,57 @@ describe('TypingEngine（タイピングエンジン）', () => {
     assert.equal(r2.completed, true);
   });
 
+  it('大文字小文字混在のお題でも完成する', () => {
+    const engine = new TypingEngine();
+    engine.loadQuestion('Apple', 'Apple');
+
+    const result1 = engine.handleKeyPress('a');
+    assert.equal(result1.correct, true);
+    assert.equal(result1.completed, false);
+
+    const result2 = engine.handleKeyPress('p');
+    assert.equal(result2.correct, true);
+
+    const result3 = engine.handleKeyPress('p');
+    assert.equal(result3.correct, true);
+
+    const result4 = engine.handleKeyPress('l');
+    assert.equal(result4.correct, true);
+
+    const result5 = engine.handleKeyPress('e');
+    assert.equal(result5.correct, true);
+    assert.equal(result5.completed, true);
+  });
+
+  it('全大文字のお題でも小文字入力で完成する', () => {
+    const engine = new TypingEngine();
+    engine.loadQuestion('APPLE', 'APPLE');
+    const inputs = 'apple'.split('');
+    let result = { completed: false };
+
+    for (const key of inputs) {
+      result = engine.handleKeyPress(key);
+      assert.equal(result.correct, true);
+    }
+
+    assert.equal(result.completed, true);
+    assert.equal(result.currentPos, 5);
+  });
+
+  it('混在ケースでも小文字入力で完成する', () => {
+    const engine = new TypingEngine();
+    engine.loadQuestion('aPpLe', 'aPpLe');
+    let result = { completed: false };
+
+    for (const key of ['a', 'p', 'p', 'l', 'e']) {
+      result = engine.handleKeyPress(key);
+      assert.equal(result.correct, true);
+    }
+
+    assert.equal(result.completed, true);
+    assert.equal(result.currentPos, 5);
+  });
+
   it('記号を含む問題を正しく入力できる', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('いざ！', 'いざ！');
