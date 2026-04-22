@@ -46,6 +46,13 @@ describe('ROMAJI_TABLE（ローマ字変換表）', () => {
     assert.ok(entries.includes('fu'), 'Missing fu');
   });
 
+  it('「ふぁ・ふぃ・ふぇ・ふぉ」に対して受理エントリがある', () => {
+    assert.ok(ROMAJI_TABLE['ふぁ'].includes('fa'), 'Missing fa');
+    assert.ok(ROMAJI_TABLE['ふぃ'].includes('fi'), 'Missing fi');
+    assert.ok(ROMAJI_TABLE['ふぇ'].includes('fe'), 'Missing fe');
+    assert.ok(ROMAJI_TABLE['ふぉ'].includes('fo'), 'Missing fo');
+  });
+
   const dakuon = ['が','ぎ','ぐ','げ','ご','ざ','じ','ず','ぜ','ぞ',
     'だ','ぢ','づ','で','ど','ば','び','ぶ','べ','ぼ'];
 
