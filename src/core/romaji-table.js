@@ -1,4 +1,4 @@
-export const ROMAJI_TABLE = {
+const ROMAJI_TABLE_DATA = {
   // 清音
   'あ': ['a'],
   'い': ['i'],
@@ -129,7 +129,9 @@ export const ROMAJI_TABLE = {
 
   // 記号・空白・数字
   '！': ['!'],
+  '＋': ['+'],
   '？': ['?'],
+  '+': ['+'],
   '、': [','],
   '。': ['.'],
   '・': ['/'],
@@ -144,5 +146,75 @@ export const ROMAJI_TABLE = {
   '６': ['6'],
   '７': ['7'],
   '８': ['8'],
-  '９': ['9']
+  '９': ['9'],
+
+  // ASCII英字
+  'a': ['a'],
+  'b': ['b'],
+  'c': ['c'],
+  'd': ['d'],
+  'e': ['e'],
+  'f': ['f'],
+  'g': ['g'],
+  'h': ['h'],
+  'i': ['i'],
+  'j': ['j'],
+  'k': ['k'],
+  'l': ['l'],
+  'm': ['m'],
+  'n': ['n'],
+  'o': ['o'],
+  'p': ['p'],
+  'q': ['q'],
+  'r': ['r'],
+  's': ['s'],
+  't': ['t'],
+  'u': ['u'],
+  'v': ['v'],
+  'w': ['w'],
+  'x': ['x'],
+  'y': ['y'],
+  'z': ['z'],
+  'A': ['A'],
+  'B': ['B'],
+  'C': ['C'],
+  'D': ['D'],
+  'E': ['E'],
+  'F': ['F'],
+  'G': ['G'],
+  'H': ['H'],
+  'I': ['I'],
+  'J': ['J'],
+  'K': ['K'],
+  'L': ['L'],
+  'M': ['M'],
+  'N': ['N'],
+  'O': ['O'],
+  'P': ['P'],
+  'Q': ['Q'],
+  'R': ['R'],
+  'S': ['S'],
+  'T': ['T'],
+  'U': ['U'],
+  'V': ['V'],
+  'W': ['W'],
+  'X': ['X'],
+  'Y': ['Y'],
+  'Z': ['Z']
 };
+
+function isKatakanaKey(key) {
+  return typeof key === 'string' && /^[ァ-ヶー]+$/.test(key);
+}
+
+export const ROMAJI_TABLE = new Proxy(ROMAJI_TABLE_DATA, {
+  get(target, prop, receiver) {
+    if (Reflect.has(target, prop)) {
+      return Reflect.get(target, prop, receiver);
+    }
+    if (isKatakanaKey(prop)) {
+      return ['kana'];
+    }
+    return undefined;
+  }
+});

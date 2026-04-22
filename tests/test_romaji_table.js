@@ -96,7 +96,9 @@ describe('ROMAJI_TABLE（ローマ字変換表）', () => {
   it('記号・空白・数字の項目が含まれる', () => {
     const cases = {
       '！': '!',
+      '＋': '+',
       '？': '?',
+      '+': '+',
       '、': ',',
       '。': '.',
       '・': '/',
@@ -118,6 +120,17 @@ describe('ROMAJI_TABLE（ローマ字変換表）', () => {
       assert.ok(ROMAJI_TABLE[kana], `Missing entry for ${kana}`);
       assert.ok(ROMAJI_TABLE[kana].includes(romaji), `Missing ${romaji} for ${kana}`);
     }
+  });
+
+  it('ASCII英字の項目が含まれる', () => {
+    assert.deepStrictEqual(ROMAJI_TABLE['a'], ['a']);
+    assert.deepStrictEqual(ROMAJI_TABLE['Z'], ['Z']);
+  });
+
+  it('カタカナはProxy経由で受理される', () => {
+    assert.deepStrictEqual(ROMAJI_TABLE['カ'], ['kana']);
+    assert.deepStrictEqual(ROMAJI_TABLE['モンスター'], ['kana']);
+    assert.equal(ROMAJI_TABLE['zzznonexistent'], undefined);
   });
 
   it('全エントリが空でない文字列配列である', () => {
