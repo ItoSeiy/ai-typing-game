@@ -131,7 +131,8 @@ describe('ROMAJI_TABLE（ローマ字変換表）', () => {
 
   it('ASCII英字の項目が含まれる', () => {
     assert.deepStrictEqual(ROMAJI_TABLE['a'], ['a']);
-    assert.deepStrictEqual(ROMAJI_TABLE['Z'], ['Z']);
+    assert.deepStrictEqual(ROMAJI_TABLE['z'], ['z']);
+    assert.equal(ROMAJI_TABLE['A'], undefined);
   });
 
   it('カタカナはProxy経由で受理される', () => {
