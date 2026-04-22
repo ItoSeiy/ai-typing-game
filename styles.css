@@ -437,8 +437,9 @@ input[type="checkbox"] {
 
 /* ─── Difficulty Screen (BEM) ─── */
 .difficulty-screen {
-  justify-content: flex-start;
-  padding-top: 6vh;
+  justify-content: center;
+  padding-top: 0;
+  min-height: 100vh;
   gap: 1rem;
 }
 
