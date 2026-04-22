@@ -109,4 +109,19 @@ describe('TypingEngine（タイピングエンジン）', () => {
     assert.equal(r2.correct, true);
     assert.equal(r2.completed, true);
   });
+
+  it('記号を含む問題を正しく入力できる', () => {
+    const engine = new TypingEngine();
+    engine.loadQuestion('いざ！', 'いざ！');
+    const inputs = ['i', 'z', 'a', '!'];
+
+    let result;
+    for (const key of inputs) {
+      result = engine.handleKeyPress(key);
+      assert.equal(result.correct, true, `key=${key}`);
+    }
+
+    assert.equal(result.completed, true);
+    assert.equal(result.currentPos, 4);
+  });
 });
