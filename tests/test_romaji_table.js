@@ -129,6 +129,13 @@ describe('ROMAJI_TABLE（ローマ字変換表）', () => {
     }
   });
 
+  it('ASCII半角数字の項目が含まれる', () => {
+    for (const digit of '0123456789') {
+      assert.ok(ROMAJI_TABLE[digit], `Missing entry for ${digit}`);
+      assert.deepStrictEqual(ROMAJI_TABLE[digit], [digit]);
+    }
+  });
+
   it('ASCII英字の項目が含まれる', () => {
     assert.deepStrictEqual(ROMAJI_TABLE['a'], ['a']);
     assert.deepStrictEqual(ROMAJI_TABLE['z'], ['z']);

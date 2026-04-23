@@ -175,4 +175,20 @@ describe('TypingEngine（タイピングエンジン）', () => {
     assert.equal(result.completed, true);
     assert.equal(result.currentPos, 4);
   });
+
+  it('ASCII半角数字を含む問題を正しく入力できる', () => {
+    const engine = new TypingEngine();
+    engine.loadQuestion('らーめん1', 'らーめん1');
+    const inputs = ['r', 'a', '-', 'm', 'e', 'n', '1'];
+
+    let result;
+    for (const key of inputs) {
+      result = engine.handleKeyPress(key);
+      assert.equal(result.correct, true, `key=${key}`);
+    }
+
+    assert.equal(result.completed, true);
+    assert.equal(result.currentPos, 7);
+    assert.equal(engine.getCurrentDisplay().typed, 'ra-men1');
+  });
 });
