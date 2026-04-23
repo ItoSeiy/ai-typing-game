@@ -192,7 +192,7 @@ const ROMAJI_TABLE_DATA = {
 };
 
 function isKatakanaKey(key) {
-  return typeof key === 'string' && /^[ァ-ヶー]+$/.test(key);
+  return typeof key === 'string' && /^[ァ-ヶ][ァ-ヶー]*$/.test(key);
 }
 
 export const ROMAJI_TABLE = new Proxy(ROMAJI_TABLE_DATA, {
