@@ -179,6 +179,8 @@ function updateGameDisplay() {
 function startCountdown() {
   currentState = State.COUNTDOWN;
   hideAllScreens();
+  gameScreen.resetState();
+  typingEngine.reset();
   gameScreen.show();
 
   ensureAudioInit();

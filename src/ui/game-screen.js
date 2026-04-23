@@ -157,4 +157,15 @@ export class GameScreen {
     this.countdownEl.style.display = 'none';
     this._firstTimerCall = undefined;
   }
+
+  resetState() {
+    this.updateQuestion('', '');
+    this.updateTyping('', '');
+    this.updateScore(0);
+    this.timerText.textContent = String(this._maxTime ?? 60);
+    this.timerBar.style.width = '100%';
+    this.timerBar.classList.remove('game-screen__timer-bar--danger');
+    this._firstTimerCall = undefined;
+    this.hideCountdown();
+  }
 }
