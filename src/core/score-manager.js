@@ -1,19 +1,40 @@
 import { CONFIG } from '../../assets/config.js';
 
+function resolveScoring(scoring) {
+  if (
+    scoring &&
+    typeof scoring === 'object' &&
+    Number.isFinite(scoring.pointPerChar) &&
+    Number.isFinite(scoring.missPoint)
+  ) {
+    return { pointPerChar: scoring.pointPerChar, missPoint: scoring.missPoint };
+  }
+  return { pointPerChar: CONFIG.scoring.pointPerChar, missPoint: CONFIG.scoring.missPoint };
+}
+
 export class ScoreManager {
-  constructor() {
+  constructor(scoring = null) {
     this.correctCount = 0;
     this.missCount = 0;
     this.score = 0;
+    this._scoring = resolveScoring(scoring);
+  }
+
+  setScoring(scoring) {
+    this._scoring = resolveScoring(scoring);
+  }
+
+  getScoring() {
+    return { ...this._scoring };
   }
 
   addQuestionComplete(kanaLength = 0) {
-    this.score += kanaLength * CONFIG.scoring.pointPerChar;
+    this.score += kanaLength * this._scoring.pointPerChar;
   }
 
   addMiss() {
     this.missCount++;
-    this.score += CONFIG.scoring.missPoint;
+    this.score += this._scoring.missPoint;
   }
 
   addCorrect() {
