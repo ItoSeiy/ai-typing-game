@@ -883,29 +883,30 @@ input[type="checkbox"] {
   display: none !important;
 }
 
-/* cmd_438 Phase1: 画像横並びレイアウト（PC は row、モバイルは縦並びフォールバック） */
+/* cmd_440 Phase A: お題コンテナを画面幅 90% まで拡大（画像:テキスト 50:50 維持） */
 .game-screen__question {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 24px;
-  width: min(100%, 920px);
+  width: 90vw;
+  max-width: none;
   margin-left: auto;
   margin-right: auto;
 }
 
 .game-screen__question-image {
+  flex: 0 0 50%;
   max-width: 50%;
-  max-height: 360px;
+  max-height: min(70vh, 500px);
   width: auto;
   height: auto;
   object-fit: contain;
-  flex-shrink: 0;
 }
 
 .game-screen__question-text {
-  flex: 1;
+  flex: 0 0 50%;
   min-width: 0;
   word-break: break-word;
   overflow-wrap: anywhere;
@@ -920,11 +921,13 @@ input[type="checkbox"] {
   }
 
   .game-screen__question-image {
+    flex: 0 0 auto;
     max-width: 60vw;
     max-height: 30vh;
   }
 
   .game-screen__question-text {
+    flex: 0 0 auto;
     text-align: center;
     font-size: 2rem;
   }
