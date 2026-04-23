@@ -74,6 +74,20 @@ const difficultyLoadPromise = difficultyLoader.loadDifficulties().then((loaded) 
   return difficulties;
 });
 
+// title 画面到達時に全難易度 CSV + 画像を並列 preload（バックグラウンド）。
+// cache hit で難易度選択後の startCountdown 直前 loadQuestions が即返る。
+const preloadAssetsPromise = difficultyLoadPromise
+  .then(async (loadedDifficulties) => {
+    const questionArrays = await Promise.all(
+      (loadedDifficulties ?? []).map((d) =>
+        levelLoader.loadLevel(d.csv).catch(() => [])
+      )
+    );
+    const allQuestions = questionArrays.flat();
+    await imagePreloader.loadAll(allQuestions).catch(() => null);
+  })
+  .catch(() => null);
+
 // ─── Matrix Rain ───
 function resizeCanvas() {
   matrixRain.resize(window.innerWidth, window.innerHeight);
