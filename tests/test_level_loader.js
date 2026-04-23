@@ -10,7 +10,7 @@ globalThis.fetch = async (url) => ({
   text: async () => csvContent
 });
 
-const { LevelLoader, shuffleQuestions } = await import('../src/loader/level-loader.js');
+const { LevelLoader, shuffleQuestions, _resetLevelCache } = await import('../src/loader/level-loader.js');
 
 describe('LevelLoader（レベル読込）', () => {
   it('loadLevelがcamelCaseキー付き質問配列を返す', async () => {
@@ -80,5 +80,92 @@ describe('shuffleQuestions（シャッフル）', () => {
     const result = loader.shuffleQuestions(input);
     assert.equal(result.length, input.length);
     assert.deepEqual(result.sort(), [...input].sort());
+  });
+});
+
+describe('LevelLoader memoize（キャッシュ）', () => {
+  it('同一 path の 2 回目は fetch を呼ばずにキャッシュを返す', async () => {
+    _resetLevelCache();
+    let fetchCount = 0;
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => {
+      fetchCount += 1;
+      return {
+        ok: true,
+        status: 200,
+        text: async () => csvContent
+      };
+    };
+
+    try {
+      const loader = new LevelLoader();
+      const first = await loader.loadLevel('assets/levels/cache.csv');
+      const second = await loader.loadLevel('assets/levels/cache.csv');
+      assert.equal(fetchCount, 1, '2 回目以降は fetch を呼ばない');
+      assert.equal(first, second, '同一参照を返す');
+    } finally {
+      globalThis.fetch = originalFetch;
+      _resetLevelCache();
+    }
+  });
+
+  it('並列 loadLevel は inflight Promise を共有し fetch は 1 回のみ', async () => {
+    _resetLevelCache();
+    let fetchCount = 0;
+    let resolveFetch;
+    const pending = new Promise((r) => {
+      resolveFetch = r;
+    });
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => {
+      fetchCount += 1;
+      await pending;
+      return {
+        ok: true,
+        status: 200,
+        text: async () => csvContent
+      };
+    };
+
+    try {
+      const loader = new LevelLoader();
+      const p1 = loader.loadLevel('assets/levels/inflight.csv');
+      const p2 = loader.loadLevel('assets/levels/inflight.csv');
+      resolveFetch();
+      const [r1, r2] = await Promise.all([p1, p2]);
+      assert.equal(fetchCount, 1, 'inflight 共有により fetch は 1 回のみ');
+      assert.equal(r1, r2, '同一 Promise 結果を共有');
+    } finally {
+      globalThis.fetch = originalFetch;
+      _resetLevelCache();
+    }
+  });
+
+  it('fetch 失敗時は inflight から除去され、次回は再試行できる', async () => {
+    _resetLevelCache();
+    let attempt = 0;
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => {
+      attempt += 1;
+      if (attempt === 1) {
+        return { ok: false, status: 500 };
+      }
+      return {
+        ok: true,
+        status: 200,
+        text: async () => csvContent
+      };
+    };
+
+    try {
+      const loader = new LevelLoader();
+      await assert.rejects(() => loader.loadLevel('assets/levels/retry.csv'));
+      const questions = await loader.loadLevel('assets/levels/retry.csv');
+      assert.equal(questions.length, 2);
+      assert.equal(attempt, 2, '失敗後は再試行される');
+    } finally {
+      globalThis.fetch = originalFetch;
+      _resetLevelCache();
+    }
   });
 });

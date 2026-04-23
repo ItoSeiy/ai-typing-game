@@ -21,23 +21,56 @@ export function shuffleQuestions(questions) {
   return shuffled;
 }
 
+const levelCache = new Map();
+const levelInflight = new Map();
+
+export function _resetLevelCache() {
+  levelCache.clear();
+  levelInflight.clear();
+}
+
+async function fetchAndParse(csvPath) {
+  const response = await fetch(csvPath);
+
+  if (!response.ok) {
+    throw new Error(`Failed to load level CSV: ${csvPath} (${response.status})`);
+  }
+
+  const csvText = await response.text();
+  const rows = parseCSV(csvText);
+
+  return rows.map((row) => ({
+    id: toNumber(row.id, 'id'),
+    textDisplay: row.text_display ?? '',
+    textKana: row.text_kana ?? '',
+    imagePath: row.image_path ?? ''
+  }));
+}
+
 export class LevelLoader {
   async loadLevel(csvPath) {
-    const response = await fetch(csvPath);
-
-    if (!response.ok) {
-      throw new Error(`Failed to load level CSV: ${csvPath} (${response.status})`);
+    if (levelCache.has(csvPath)) {
+      return levelCache.get(csvPath);
     }
 
-    const csvText = await response.text();
-    const rows = parseCSV(csvText);
+    if (levelInflight.has(csvPath)) {
+      return levelInflight.get(csvPath);
+    }
 
-    return rows.map((row) => ({
-      id: toNumber(row.id, 'id'),
-      textDisplay: row.text_display ?? '',
-      textKana: row.text_kana ?? '',
-      imagePath: row.image_path ?? ''
-    }));
+    const promise = fetchAndParse(csvPath).then(
+      (questions) => {
+        levelCache.set(csvPath, questions);
+        levelInflight.delete(csvPath);
+        return questions;
+      },
+      (err) => {
+        levelInflight.delete(csvPath);
+        throw err;
+      }
+    );
+
+    levelInflight.set(csvPath, promise);
+    return promise;
   }
 
   shuffleQuestions(questions) {
