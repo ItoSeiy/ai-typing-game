@@ -294,6 +294,7 @@ function getSelectedCSVPath() {
 
 async function startGameForDifficulty(difficulty) {
   difficultyScreen.hide();
+  scoreManager.setScoring(difficulty?.scoring ?? CONFIG.scoring);
   await loadQuestions(difficulty?.csv || CONFIG.defaultCSVPath);
   startCountdown();
 }
