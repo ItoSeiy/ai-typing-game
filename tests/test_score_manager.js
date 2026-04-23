@@ -29,13 +29,13 @@ describe('ScoreManager（得点管理）', () => {
     assert.equal(sm.getMissCount(), 1);
   });
 
-  it('addMissがCONFIG.scoring.missPointを適用する', () => {
+  it('未指定時の addMiss は CONFIG.scoring.missPoint を適用する', () => {
     const sm = new ScoreManager();
     sm.addMiss();
     assert.equal(sm.getScore(), CONFIG.scoring.missPoint);
   });
 
-  it('addQuestionCompleteが文字数×CONFIG.scoring.pointPerCharで加算する', () => {
+  it('未指定時の addQuestionComplete は文字数×CONFIG.scoring.pointPerChar で加算する', () => {
     const sm = new ScoreManager();
     sm.addQuestionComplete(5);
     assert.equal(sm.getScore(), CONFIG.scoring.pointPerChar * 5);
@@ -89,7 +89,64 @@ describe('ScoreManager（得点管理）', () => {
   });
 });
 
-describe('ScoreManager CONFIG駆動挙動', () => {
+describe('ScoreManager scoring 注入挙動', () => {
+  it('コンストラクタ引数の scoring を採用する（normal: 20/0）', () => {
+    const sm = new ScoreManager({ pointPerChar: 20, missPoint: 0 });
+    sm.addQuestionComplete(4);
+    assert.equal(sm.getScore(), 80);
+    sm.addMiss();
+    assert.equal(sm.getScore(), 80);
+  });
+
+  it('コンストラクタ引数で hard 値（21/0）が反映される', () => {
+    const sm = new ScoreManager({ pointPerChar: 21, missPoint: 0 });
+    sm.addQuestionComplete(10);
+    assert.equal(sm.getScore(), 210);
+  });
+
+  it('コンストラクタ引数で very_hard 値（22/0）が反映される', () => {
+    const sm = new ScoreManager({ pointPerChar: 22, missPoint: 0 });
+    sm.addQuestionComplete(5);
+    assert.equal(sm.getScore(), 110);
+  });
+
+  it('setScoring で scoring を切替できる', () => {
+    const sm = new ScoreManager({ pointPerChar: 20, missPoint: 0 });
+    sm.setScoring({ pointPerChar: 22, missPoint: 0 });
+    sm.addQuestionComplete(3);
+    assert.equal(sm.getScore(), 66);
+  });
+
+  it('不正な scoring（欠落）は CONFIG.scoring にフォールバックする', () => {
+    const sm = new ScoreManager({ pointPerChar: 'xxx' });
+    sm.addQuestionComplete(2);
+    assert.equal(sm.getScore(), CONFIG.scoring.pointPerChar * 2);
+  });
+
+  it('null を渡すと CONFIG.scoring にフォールバックする', () => {
+    const sm = new ScoreManager(null);
+    sm.addQuestionComplete(3);
+    assert.equal(sm.getScore(), CONFIG.scoring.pointPerChar * 3);
+  });
+
+  it('reset 後も scoring は維持される', () => {
+    const sm = new ScoreManager({ pointPerChar: 22, missPoint: 0 });
+    sm.addQuestionComplete(2);
+    sm.reset();
+    sm.addQuestionComplete(2);
+    assert.equal(sm.getScore(), 44);
+  });
+
+  it('getScoring は設定した scoring のコピーを返す', () => {
+    const sm = new ScoreManager({ pointPerChar: 21, missPoint: 0 });
+    const got = sm.getScoring();
+    assert.deepEqual(got, { pointPerChar: 21, missPoint: 0 });
+    got.pointPerChar = 999;
+    assert.equal(sm.getScoring().pointPerChar, 21);
+  });
+});
+
+describe('ScoreManager CONFIG駆動フォールバック', () => {
   const origPointPerChar = CONFIG.scoring.pointPerChar;
   const origMissPoint = CONFIG.scoring.missPoint;
 
@@ -98,7 +155,7 @@ describe('ScoreManager CONFIG駆動挙動', () => {
     CONFIG.scoring.missPoint = origMissPoint;
   });
 
-  it('pointPerChar=30の場合、1問完了の加点は文字数比例になる', () => {
+  it('pointPerChar=30 のとき未指定インスタンスが 30×文字数 を適用する', () => {
     CONFIG.scoring.pointPerChar = 30;
     const sm = new ScoreManager();
     sm.addQuestionComplete(4);
@@ -115,12 +172,5 @@ describe('ScoreManager CONFIG駆動挙動', () => {
     assert.equal(shortSm.getScore(), CONFIG.scoring.pointPerChar * 2);
     assert.equal(longSm.getScore(), CONFIG.scoring.pointPerChar * 7);
     assert.notEqual(shortSm.getScore(), longSm.getScore());
-  });
-
-  it('ミス1回で5点減る場合の挙動', () => {
-    CONFIG.scoring.missPoint = -5;
-    const sm = new ScoreManager();
-    sm.addMiss();
-    assert.equal(sm.getScore(), -5);
   });
 });
