@@ -25,7 +25,9 @@ body {
   transition: opacity 0.3s ease;
 }
 
-body.game-active #matrix-canvas {
+body.game-active #matrix-canvas,
+body.title-active #matrix-canvas,
+body.difficulty-active #matrix-canvas {
   opacity: 0.3;
 }
 

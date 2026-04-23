@@ -90,17 +90,22 @@ function hideAllScreens() {
   resultScreen.hide();
   settingsScreen.hide();
   gameMenu.hideAll();
+  document.body.classList.remove('title-active', 'difficulty-active');
 }
 
 function showTitle() {
   currentState = State.TITLE;
   hideAllScreens();
+  document.body.classList.add('title-active');
+  document.body.classList.remove('difficulty-active');
   titleScreen.show(onStartClicked);
 }
 
 function showDifficulty() {
   currentState = State.DIFFICULTY;
   hideAllScreens();
+  document.body.classList.add('difficulty-active');
+  document.body.classList.remove('title-active');
   difficultyScreen.show(difficulties, async (difficulty) => {
     selectedDifficulty = difficulty;
     await startGameForDifficulty(difficulty);
