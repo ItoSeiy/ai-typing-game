@@ -100,6 +100,11 @@ describe('ROMAJI_TABLE（ローマ字変換表）', () => {
     assert.ok(ROMAJI_TABLE['ー'].includes('-'));
   });
 
+  it('長音符だけの連続文字列はProxyのkana fallback に入らない', () => {
+    assert.equal(ROMAJI_TABLE['ーー'], undefined);
+    assert.equal(ROMAJI_TABLE['ーーーー'], undefined);
+  });
+
   it('記号・空白・数字の項目が含まれる', () => {
     const cases = {
       '！': '!',
@@ -145,6 +150,7 @@ describe('ROMAJI_TABLE（ローマ字変換表）', () => {
   it('カタカナはProxy経由で受理される', () => {
     assert.deepStrictEqual(ROMAJI_TABLE['カ'], ['kana']);
     assert.deepStrictEqual(ROMAJI_TABLE['モンスター'], ['kana']);
+    assert.deepStrictEqual(ROMAJI_TABLE['ドラゲナイ'], ['kana']);
     assert.equal(ROMAJI_TABLE['zzznonexistent'], undefined);
   });
 

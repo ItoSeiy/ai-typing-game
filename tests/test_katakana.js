@@ -63,6 +63,18 @@ describe('伸ばし棒テスト', () => {
     assert.equal(result.completed, true);
   });
 
+  it('「ーー」を "--" で入力できる', () => {
+    const engine = new TypingEngine();
+    engine.loadQuestion('ーー', 'ーー');
+    typeAll(engine, '--'.split(''));
+  });
+
+  it('「ーーーー」を "----" で入力できる', () => {
+    const engine = new TypingEngine();
+    engine.loadQuestion('ーーーー', 'ーーーー');
+    typeAll(engine, '----'.split(''));
+  });
+
   it('「コーヒー」を ko-hi- で入力完了できる', () => {
     const engine = new TypingEngine();
     engine.loadQuestion('コーヒー', 'こーひー');
