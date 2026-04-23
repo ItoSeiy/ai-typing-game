@@ -3,6 +3,7 @@ import { GameLoop } from './core/game-loop.js';
 import { TypingEngine } from './core/typing-engine.js';
 import { ScoreManager } from './core/score-manager.js';
 import { InputHandler } from './core/input-handler.js';
+import { QuestionDeck } from './core/question-deck.js';
 
 // ─── Data modules ───
 import { CONFIG } from '../assets/config.js';
@@ -33,11 +34,17 @@ const State = {
 };
 
 let currentState = State.TITLE;
-let questions = [];
 let difficulties = [];
 let selectedDifficulty = null;
-let currentQuestionIndex = 0;
 let audioInitialized = false;
+
+const questionDeck = new QuestionDeck();
+
+const FALLBACK_QUESTIONS = [
+  { display: 'さくら', kana: 'さくら', imagePath: '' },
+  { display: 'にほん', kana: 'にほん', imagePath: '' },
+  { display: 'たいぴんぐ', kana: 'たいぴんぐ', imagePath: '' }
+];
 
 // ─── Core Instances ───
 const gameLoop = new GameLoop(CONFIG.timeLimit);
@@ -139,51 +146,33 @@ async function loadQuestions(csvPath = CONFIG.defaultCSVPath) {
   try {
     const rawQuestions = await levelLoader.loadLevel(csvPath);
     const sourceQuestions = rawQuestions.length > 0
-      ? rawQuestions
-      : [
-          { textDisplay: 'さくら', textKana: 'さくら', imagePath: '' },
-          { textDisplay: 'にほん', textKana: 'にほん', imagePath: '' },
-          { textDisplay: 'たいぴんぐ', textKana: 'たいぴんぐ', imagePath: '' }
-        ];
-    questions = sourceQuestions.map(q => ({
-      display: q.textDisplay,
-      kana: q.textKana,
-      imagePath: q.imagePath || ''
-    }));
-    shuffleArray(questions);
-    await imagePreloader.loadAll(questions);
+      ? rawQuestions.map(q => ({
+          display: q.textDisplay,
+          kana: q.textKana,
+          imagePath: q.imagePath || ''
+        }))
+      : FALLBACK_QUESTIONS;
+    const changed = questionDeck.setQuestions(sourceQuestions, csvPath);
+    if (changed) {
+      await imagePreloader.loadAll(questionDeck.snapshot());
+    }
   } catch (e) {
     console.error('Failed to load questions:', e);
-    questions = [
-      { display: 'さくら', kana: 'さくら', imagePath: '' },
-      { display: 'にほん', kana: 'にほん', imagePath: '' },
-      { display: 'たいぴんぐ', kana: 'たいぴんぐ', imagePath: '' }
-    ];
-  }
-}
-
-function shuffleArray(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    questionDeck.setQuestions(FALLBACK_QUESTIONS, '__fallback__');
   }
 }
 
 // ─── Question Flow ───
 function nextQuestion() {
-  if (currentQuestionIndex >= questions.length) {
-    currentQuestionIndex = 0;
-    shuffleArray(questions);
-  }
-  const q = questions[currentQuestionIndex];
+  const q = questionDeck.next();
+  if (!q) return;
   typingEngine.loadQuestion(q.display, q.kana);
-  currentQuestionIndex++;
   updateGameDisplay();
 }
 
 function updateGameDisplay() {
   const display = typingEngine.getCurrentDisplay();
-  const q = questions[currentQuestionIndex - 1];
+  const q = questionDeck.current();
   gameScreen.updateQuestion(display.original, q?.imagePath || '');
   gameScreen.updateTyping(display.typed, display.remaining);
   gameScreen.updateScore(scoreManager.getScore());
@@ -221,8 +210,6 @@ function startCountdown() {
 function startGame() {
   currentState = State.PLAYING;
   scoreManager.reset();
-  currentQuestionIndex = 0;
-  shuffleArray(questions);
   nextQuestion();
 
   audioManager.playSE('start');
@@ -243,7 +230,7 @@ function startGame() {
     }
 
     if (result.completed) {
-      const currentQ = questions[currentQuestionIndex - 1];
+      const currentQ = questionDeck.current();
       scoreManager.addQuestionComplete(currentQ?.kana.length ?? 0);
       audioManager.playSE('correct');
       nextQuestion();
